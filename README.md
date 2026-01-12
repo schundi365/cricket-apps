@@ -1,70 +1,243 @@
-# Getting Started with Create React App
+# MK Air Cricket Club - Training Skills Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A comprehensive cricket team management and performance tracking application with multi-user support, built with React and Supabase.
+
+![Cricket Tracker](https://img.shields.io/badge/React-19.2-blue)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+## Features
+
+### Player Management
+- Add and manage team players
+- Search and filter players
+- Track 130+ default players
+
+### Skills Tracking
+Rate players across 16 different skills in 4 categories:
+- **Batting**: Technique, Shot Selection, Footwork, Power
+- **Bowling**: Accuracy, Pace/Spin, Variation, Line & Length
+- **Fielding**: Catching, Throwing, Ground Fielding, Agility
+- **Fitness**: Stamina, Speed, Strength, Flexibility
+
+### Nets Session Statistics
+- Attendance tracking (Present in Nets)
+- Technique focus monitoring
+- Dismissal tracking (Times Got Out)
+- Bowling performance (Wickets Taken, Extras)
+- Automated performance metrics calculation
+
+### Leaderboards
+- Top 5 performers by skills average
+- Best attendance tracking
+- Real-time rankings
+
+### Data Export
+- Export all player data to Excel
+- Comprehensive statistics included
+- Calculated metrics (dismissal rates, wickets per session)
+
+### Multi-User Database Support
+- **Supabase PostgreSQL database** with free tier
+- User authentication (sign up/sign in)
+- Real-time data persistence
+- Row Level Security for data protection
+- **Offline mode** - works without database configuration
+
+## Quick Start
+
+### Prerequisites
+- Node.js 14+ and npm
+- Supabase account (free tier) - optional but recommended for multi-user support
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd cricket-apps
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. **For Multi-User Support** (optional but recommended):
+   - Follow the [Supabase Setup Guide](SUPABASE_SETUP.md)
+   - Create `.env` file with your Supabase credentials:
+   ```
+   REACT_APP_SUPABASE_URL=your-project-url
+   REACT_APP_SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+4. Start the development server:
+```bash
+npm start
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Usage Modes
+
+### With Database (Multi-User Mode)
+- Create a Supabase project and configure environment variables
+- Sign up/Sign in to access the application
+- All data persists in the cloud
+- Multiple users can access and update data simultaneously
+- See [SUPABASE_SETUP.md](SUPABASE_SETUP.md) for detailed setup
+
+### Without Database (Offline Mode)
+- Works immediately without any setup
+- Data stored in browser memory only
+- Data lost on page refresh
+- Single-user only
+- Perfect for quick testing or demo
+
+## Database Schema
+
+The application uses Supabase PostgreSQL with the following structure:
+
+- **players** - Player profiles
+- **skill_ratings** - Individual skill ratings (1-10 scale)
+- **nets_data** - Nets session statistics
+- **profiles** - User profiles with role-based access
+
+See `supabase-schema.sql` for the complete schema definition.
+
+## Project Structure
+
+```
+cricket-apps/
+├── public/
+│   ├── index.html          # HTML template
+│   └── ...
+├── src/
+│   ├── App.js              # Main application component
+│   ├── Auth.js             # Authentication component
+│   ├── supabaseClient.js   # Supabase client configuration
+│   ├── index.js            # React entry point
+│   └── index.css           # Global styles
+├── .env.example            # Environment variables template
+├── .gitignore
+├── package.json
+├── supabase-schema.sql     # Database schema
+├── SUPABASE_SETUP.md       # Database setup guide
+└── README.md
+```
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000).
+The page reloads when you make changes.
 
 ### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in interactive watch mode.
 
 ### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Builds the app for production to the `build` folder.
+Optimized and minified for best performance.
 
 ### `npm run eject`
+**Note: this is a one-way operation!**
+Ejects from Create React App for full configuration control.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Technologies Used
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **React 19.2** - Frontend framework
+- **Supabase** - Backend-as-a-Service (PostgreSQL, Auth, Realtime)
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Icon library
+- **XLSX** - Excel file generation
+- **Create React App** - Build tooling
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Multi-User Features
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+When database is configured:
+- ✅ User authentication with email/password
+- ✅ Persistent data storage in PostgreSQL
+- ✅ Real-time data synchronization
+- ✅ Multiple users can collaborate
+- ✅ Row Level Security policies
+- ✅ Automatic timestamps and audit trails
+- ✅ User profile management
 
-## Learn More
+## Deployment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### GitHub Pages
+```bash
+npm run build
+# Deploy the build folder
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Vercel / Netlify
+1. Connect your repository
+2. Set environment variables:
+   - `REACT_APP_SUPABASE_URL`
+   - `REACT_APP_SUPABASE_ANON_KEY`
+3. Deploy automatically
 
-### Code Splitting
+### Important for Production
+Update Supabase Authentication settings:
+- Add your production URL to Site URL
+- Add your production URL to Redirect URLs
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+See [SUPABASE_SETUP.md](SUPABASE_SETUP.md) for detailed deployment instructions.
 
-### Analyzing the Bundle Size
+## Troubleshooting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### "Offline Mode" Warning
+The application works without a database but data won't persist. To enable multi-user support:
+1. Follow [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
+2. Create a `.env` file with your credentials
+3. Restart the development server
 
-### Making a Progressive Web App
+### Database Connection Issues
+- Verify `.env` file exists and has correct credentials
+- Check Supabase project is active
+- Ensure environment variables start with `REACT_APP_`
+- Restart the development server after changing `.env`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Authentication Problems
+- Check Supabase Authentication settings
+- Verify email confirmation (if enabled)
+- Clear browser cache and cookies
+- Check Site URL and Redirect URLs in Supabase dashboard
 
-### Advanced Configuration
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Contributions are welcome! Please follow these steps:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-### Deployment
+## Support
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+For issues and questions:
+- Check [SUPABASE_SETUP.md](SUPABASE_SETUP.md) for database setup
+- Review the [Supabase Documentation](https://supabase.com/docs)
+- Open an issue in the repository
 
-### `npm run build` fails to minify
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License.
+
+## Acknowledgments
+
+- MK Air Cricket Club team
+- Supabase for the amazing backend platform
+- React and Create React App teams
+- All contributors and users
+
+---
+
+**Note**: This application uses Supabase's free tier which includes:
+- 500 MB database storage
+- 2 GB bandwidth
+- 50,000 monthly active users
+- Perfect for small to medium cricket clubs!
+
+For more information about setting up the database, see [SUPABASE_SETUP.md](SUPABASE_SETUP.md).

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { Search, TrendingUp, Award, Users, Calendar, UserPlus, Download } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Award, Users, Calendar, UserPlus, Download, LogOut, Loader, AlertCircle } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+import Auth from './Auth';
 
 const TrainingTracker = () => {
-  const players = [
+  // Initial hardcoded players list for seeding
+  const initialPlayers = [
     "Aditya Aggarwal", "Deepak Aggarwal", "Vijay Anand Pandian", "Sankar Krishna Anne",
     "Vijay Baburaj", "Basil Baby", "Deepak Balakrishnan", "Sathiya Sriram Balakrishnan",
     "Santosh Ballary", "Sunny Batra", "Viren Bhatia", "Deepak Bhatt", "Rohit Bhola",
@@ -49,6 +52,12 @@ const TrainingTracker = () => {
     { name: 'Fitness', skills: ['Stamina', 'Speed', 'Strength', 'Flexibility'] }
   ];
 
+  // Authentication state
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [dbConfigured, setDbConfigured] = useState(false);
+
+  // App state
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [ratings, setRatings] = useState({});
@@ -56,15 +65,177 @@ const TrainingTracker = () => {
   const [view, setView] = useState('list');
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState('');
-  const [playersList, setPlayersList] = useState(players);
+  const [playersList, setPlayersList] = useState([]);
+  const [syncing, setSyncing] = useState(false);
+  const [error, setError] = useState('');
+
+  // Check Supabase configuration and auth state on mount
+  useEffect(() => {
+    const configured = isSupabaseConfigured();
+    setDbConfigured(configured);
+
+    if (configured) {
+      // Check current session
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
+
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+
+      return () => subscription.unsubscribe();
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  // Load data from Supabase when user logs in
+  useEffect(() => {
+    if (user && dbConfigured) {
+      loadDataFromDatabase();
+    } else if (!dbConfigured) {
+      // Fallback to initial players if no database
+      setPlayersList(initialPlayers);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, dbConfigured]);
+
+  // Load all data from Supabase
+  const loadDataFromDatabase = async () => {
+    setSyncing(true);
+    setError('');
+
+    try {
+      // Load players
+      const { data: playersData, error: playersError } = await supabase
+        .from('players')
+        .select('*')
+        .order('name');
+
+      if (playersError) throw playersError;
+
+      // If no players exist, seed with initial players
+      if (!playersData || playersData.length === 0) {
+        await seedInitialPlayers();
+        return; // seedInitialPlayers will reload data
+      }
+
+      const players = playersData.map(p => p.name);
+      setPlayersList(players);
+
+      // Load skill ratings
+      const { data: ratingsData, error: ratingsError } = await supabase
+        .from('skill_ratings')
+        .select('*, players(name)');
+
+      if (ratingsError) throw ratingsError;
+
+      // Transform ratings data
+      const ratingsObj = {};
+      ratingsData.forEach(rating => {
+        const playerName = rating.players.name;
+        if (!ratingsObj[playerName]) {
+          ratingsObj[playerName] = {};
+        }
+        const key = `${rating.category}-${rating.skill_name}`;
+        ratingsObj[playerName][key] = rating.rating;
+      });
+      setRatings(ratingsObj);
+
+      // Load nets data
+      const { data: netsDataResult, error: netsError } = await supabase
+        .from('nets_data')
+        .select('*, players(name)');
+
+      if (netsError) throw netsError;
+
+      // Transform nets data
+      const netsObj = {};
+      netsDataResult.forEach(nets => {
+        const playerName = nets.players.name;
+        netsObj[playerName] = {
+          presentInNets: nets.present_in_nets,
+          worksOnTechnique: nets.works_on_technique,
+          timesGotOut: nets.times_got_out,
+          wicketsTaken: nets.wickets_taken,
+          bowlingExtras: nets.bowling_extras
+        };
+      });
+      setNetsData(netsObj);
+
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Failed to load data from database. Using offline mode.');
+      setPlayersList(initialPlayers);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  // Seed initial players into database
+  const seedInitialPlayers = async () => {
+    try {
+      const playersToInsert = initialPlayers.map(name => ({ name }));
+
+      const { error } = await supabase
+        .from('players')
+        .insert(playersToInsert);
+
+      if (error) throw error;
+
+      // Reload data
+      await loadDataFromDatabase();
+    } catch (err) {
+      console.error('Error seeding players:', err);
+      setError('Failed to initialize database. Using offline mode.');
+      setPlayersList(initialPlayers);
+    }
+  };
+
+  // Get player ID from name
+  const getPlayerId = async (playerName) => {
+    const { data, error } = await supabase
+      .from('players')
+      .select('id')
+      .eq('name', playerName)
+      .single();
+
+    if (error) throw error;
+    return data.id;
+  };
 
   const filteredPlayers = playersList.filter(player =>
     player.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const addPlayer = () => {
-    if (newPlayerName.trim() && !playersList.includes(newPlayerName.trim())) {
-      setPlayersList([...playersList, newPlayerName.trim()].sort());
+  const addPlayer = async () => {
+    if (!newPlayerName.trim() || playersList.includes(newPlayerName.trim())) {
+      return;
+    }
+
+    const playerName = newPlayerName.trim();
+
+    if (dbConfigured && user) {
+      try {
+        const { error } = await supabase
+          .from('players')
+          .insert([{ name: playerName }]);
+
+        if (error) throw error;
+
+        setPlayersList([...playersList, playerName].sort());
+        setNewPlayerName('');
+        setShowAddPlayer(false);
+      } catch (err) {
+        console.error('Error adding player:', err);
+        setError('Failed to add player to database');
+      }
+    } else {
+      // Offline mode
+      setPlayersList([...playersList, playerName].sort());
       setNewPlayerName('');
       setShowAddPlayer(false);
     }
@@ -74,7 +245,7 @@ const TrainingTracker = () => {
     const exportData = playersList.map(player => {
       const playerRatings = ratings[player] || {};
       const playerNets = netsData[player] || {};
-      
+
       const row = {
         'Player Name': player,
         'Skills Average': getPlayerAverage(player),
@@ -112,15 +283,16 @@ const TrainingTracker = () => {
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Player Stats');
-    
+
     // Auto-size columns
     const maxWidth = exportData.reduce((w, r) => Math.max(w, Object.keys(r).length), 10);
     worksheet['!cols'] = Array(maxWidth).fill({ wch: 15 });
-    
+
     XLSX.writeFile(workbook, `MK_Air_Cricket_Club_Stats_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-  const updateRating = (player, category, skill, value) => {
+  const updateRating = async (player, category, skill, value) => {
+    // Update local state immediately
     setRatings(prev => ({
       ...prev,
       [player]: {
@@ -128,9 +300,34 @@ const TrainingTracker = () => {
         [`${category}-${skill}`]: value
       }
     }));
+
+    // Save to database if configured
+    if (dbConfigured && user) {
+      try {
+        const playerId = await getPlayerId(player);
+
+        const { error } = await supabase
+          .from('skill_ratings')
+          .upsert({
+            player_id: playerId,
+            category: category.toLowerCase(),
+            skill_name: skill.toLowerCase(),
+            rating: value,
+            updated_by: user.id
+          }, {
+            onConflict: 'player_id,category,skill_name'
+          });
+
+        if (error) throw error;
+      } catch (err) {
+        console.error('Error updating rating:', err);
+        setError('Failed to save rating to database');
+      }
+    }
   };
 
-  const updateNetsData = (player, field, value) => {
+  const updateNetsData = async (player, field, value) => {
+    // Update local state immediately
     setNetsData(prev => ({
       ...prev,
       [player]: {
@@ -138,6 +335,36 @@ const TrainingTracker = () => {
         [field]: value
       }
     }));
+
+    // Save to database if configured
+    if (dbConfigured && user) {
+      try {
+        const playerId = await getPlayerId(player);
+
+        // Get current nets data for this player
+        const currentData = netsData[player] || {};
+        const updatedData = { ...currentData, [field]: value };
+
+        const { error } = await supabase
+          .from('nets_data')
+          .upsert({
+            player_id: playerId,
+            present_in_nets: updatedData.presentInNets || 0,
+            works_on_technique: updatedData.worksOnTechnique || 'No',
+            times_got_out: updatedData.timesGotOut || 0,
+            wickets_taken: updatedData.wicketsTaken || 0,
+            bowling_extras: updatedData.bowlingExtras || 0,
+            updated_by: user.id
+          }, {
+            onConflict: 'player_id'
+          });
+
+        if (error) throw error;
+      } catch (err) {
+        console.error('Error updating nets data:', err);
+        setError('Failed to save nets data to database');
+      }
+    }
   };
 
   const getPlayerAverage = (player) => {
@@ -149,8 +376,8 @@ const TrainingTracker = () => {
 
   const getTopPerformers = () => {
     return playersList
-      .map(player => ({ 
-        name: player, 
+      .map(player => ({
+        name: player,
         avg: parseFloat(getPlayerAverage(player)),
         netsAttendance: netsData[player]?.presentInNets || 0
       }))
@@ -161,8 +388,8 @@ const TrainingTracker = () => {
 
   const getBestAttendance = () => {
     return playersList
-      .map(player => ({ 
-        name: player, 
+      .map(player => ({
+        name: player,
         attendance: netsData[player]?.presentInNets || 0
       }))
       .filter(p => p.attendance > 0)
@@ -170,15 +397,87 @@ const TrainingTracker = () => {
       .slice(0, 5);
   };
 
+  const handleSignOut = async () => {
+    if (dbConfigured) {
+      await supabase.auth.signOut();
+    }
+    setUser(null);
+    setRatings({});
+    setNetsData({});
+    setPlayersList(initialPlayers);
+  };
+
+  // Show loading screen
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="animate-spin text-green-600 mx-auto mb-4" size={48} />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show auth screen if database is configured but user is not logged in
+  if (dbConfigured && !user) {
+    return <Auth supabase={supabase} onAuthSuccess={() => {}} />;
+  }
+
+  // Show warning if database is not configured
+  const showDbWarning = !dbConfigured;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
       <div className="max-w-6xl mx-auto">
+        {/* Database Warning */}
+        {showDbWarning && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 rounded">
+            <div className="flex">
+              <AlertCircle className="text-yellow-400 mr-3" size={24} />
+              <div>
+                <p className="text-sm text-yellow-700">
+                  <strong>Offline Mode:</strong> Database not configured. Data will not persist.
+                  See <strong>SUPABASE_SETUP.md</strong> for setup instructions.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4 rounded">
+            <div className="flex justify-between items-center">
+              <div className="flex">
+                <AlertCircle className="text-red-400 mr-3" size={24} />
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+              <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">MK Air Cricket Club</h1>
-              <p className="text-gray-600">Training Skills Tracker</p>
+              <p className="text-gray-600">
+                Training Skills Tracker
+                {dbConfigured && user && (
+                  <span className="ml-2 text-sm text-green-600">
+                    • {user.email}
+                  </span>
+                )}
+                {syncing && (
+                  <span className="ml-2 text-sm text-blue-600">
+                    <Loader className="inline animate-spin" size={12} /> Syncing...
+                  </span>
+                )}
+              </p>
             </div>
             <div className="flex gap-2">
               <button
@@ -207,6 +506,15 @@ const TrainingTracker = () => {
                 <Download size={20} />
                 <span className="hidden md:inline">Export</span>
               </button>
+              {dbConfigured && user && (
+                <button
+                  onClick={handleSignOut}
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 flex items-center gap-2"
+                >
+                  <LogOut size={20} />
+                  <span className="hidden md:inline">Sign Out</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -319,7 +627,7 @@ const TrainingTracker = () => {
               {filteredPlayers.map(player => {
                 const playerNetsData = netsData[player] || {};
                 const attendance = playerNetsData.presentInNets || 0;
-                
+
                 return (
                   <button
                     key={player}
@@ -387,7 +695,7 @@ const TrainingTracker = () => {
                       placeholder="0"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Works on Technique
@@ -403,7 +711,7 @@ const TrainingTracker = () => {
                       <option value="Always">Always</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Times Got Out
@@ -417,7 +725,7 @@ const TrainingTracker = () => {
                       placeholder="0"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Wickets Taken
@@ -431,7 +739,7 @@ const TrainingTracker = () => {
                       placeholder="0"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Bowling Extras
@@ -487,7 +795,7 @@ const TrainingTracker = () => {
                     {category.skills.map(skill => {
                       const key = `${category.name}-${skill}`;
                       const currentRating = ratings[selectedPlayer]?.[key] || 0;
-                      
+
                       return (
                         <div key={skill} className="bg-gray-50 p-4 rounded-lg">
                           <div className="flex justify-between mb-2">
