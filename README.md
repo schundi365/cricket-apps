@@ -165,10 +165,28 @@ When database is configured:
 
 ## Deployment
 
-### GitHub Pages
+### GitHub Pages (Automated with GitHub Actions)
+
+The application is configured for automatic deployment to GitHub Pages using GitHub Actions.
+
+**Setup:**
+1. Go to your GitHub repository → Settings → Pages
+2. Under "Build and deployment":
+   - Source: Select "GitHub Actions"
+3. Push to your main branch or `claude/free-database-multi-user-DP78D` branch
+4. GitHub Actions will automatically build and deploy
+
+**Live URL:** `https://schundi365.github.io/cricket-apps/`
+
+The workflow is configured in `.github/workflows/deploy.yml` and triggers on:
+- Push to main/master branch
+- Push to `claude/free-database-multi-user-DP78D` branch
+- Manual trigger via "Actions" tab
+
+**Manual Deployment:**
 ```bash
 npm run build
-# Deploy the build folder
+npm run deploy  # Uses gh-pages package
 ```
 
 ### Vercel / Netlify
@@ -176,12 +194,14 @@ npm run build
 2. Set environment variables:
    - `REACT_APP_SUPABASE_URL`
    - `REACT_APP_SUPABASE_ANON_KEY`
-3. Deploy automatically
+3. Deploy automatically on push
 
 ### Important for Production
 Update Supabase Authentication settings:
-- Add your production URL to Site URL
-- Add your production URL to Redirect URLs
+- Add your production URL to Site URL:
+  - For GitHub Pages: `https://schundi365.github.io/cricket-apps`
+- Add your production URL to Redirect URLs:
+  - `https://schundi365.github.io/cricket-apps/**`
 
 See [SUPABASE_SETUP.md](SUPABASE_SETUP.md) for detailed deployment instructions.
 
