@@ -4,6 +4,7 @@
   "homepage": "https://schundi365.github.io/cricket-apps",
   "private": true,
   "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -16,17 +17,25 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build"
- },
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "repair:session-dates": "node src/scripts/repairSessionDates.js",
+    "repair:session-dates:dry-run": "node src/scripts/repairSessionDates.js --dry-run",
+    "repair:session-dates:verbose": "node src/scripts/repairSessionDates.js --dry-run --verbose"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
+    ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(fast-check)/)"
     ]
   },
   "browserslist": {
@@ -42,6 +51,7 @@
     ]
   },
   "devDependencies": {
+    "fast-check": "^4.5.3",
     "gh-pages": "^6.3.0"
   }
 }
