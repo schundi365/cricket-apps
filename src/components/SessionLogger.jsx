@@ -21,14 +21,14 @@ const SessionLogger = () => {
   // Form state for player detail modal
   const [playerFormData, setPlayerFormData] = useState({
     nets_attended: false,
-    amount_due: 0,
+    amount_due: '',
     session_batting_rating: '',
     session_bowling_rating: '',
     session_fielding_rating: '',
     session_fitness_rating: '',
-    dismissals: 0,
-    wickets: 0,
-    extras: 0
+    dismissals: '',
+    wickets: '',
+    extras: ''
   });
 
   // Get statistics for selected session
@@ -115,7 +115,46 @@ const SessionLogger = () => {
     if (!selectedSession) return;
     
     try {
-      await updateStatistic(playerId, updates);
+      // Clean up the data - parse text to numbers where needed, or set to null
+      const cleanedUpdates = { ...updates };
+      
+      // Parse amount_due: try to convert to number, otherwise null
+      if (cleanedUpdates.amount_due === '' || cleanedUpdates.amount_due === null) {
+        cleanedUpdates.amount_due = null;
+      } else if (typeof cleanedUpdates.amount_due === 'string') {
+        const parsed = parseFloat(cleanedUpdates.amount_due);
+        cleanedUpdates.amount_due = isNaN(parsed) ? null : parsed;
+      }
+      
+      // Parse rating fields: try to convert to integer, otherwise null
+      const ratingFields = [
+        'session_batting_rating',
+        'session_bowling_rating', 
+        'session_fielding_rating',
+        'session_fitness_rating'
+      ];
+      
+      ratingFields.forEach(field => {
+        if (cleanedUpdates[field] === '' || cleanedUpdates[field] === null) {
+          cleanedUpdates[field] = null;
+        } else if (typeof cleanedUpdates[field] === 'string') {
+          const parsed = parseInt(cleanedUpdates[field]);
+          cleanedUpdates[field] = isNaN(parsed) ? null : parsed;
+        }
+      });
+      
+      // Parse performance stat fields: try to convert to integer, otherwise null
+      const statFields = ['dismissals', 'wickets', 'extras'];
+      statFields.forEach(field => {
+        if (cleanedUpdates[field] === '' || cleanedUpdates[field] === null) {
+          cleanedUpdates[field] = null;
+        } else if (typeof cleanedUpdates[field] === 'string') {
+          const parsed = parseInt(cleanedUpdates[field]);
+          cleanedUpdates[field] = isNaN(parsed) ? null : parsed;
+        }
+      });
+      
+      await updateStatistic(playerId, cleanedUpdates);
       await refetchStats();
       setSelectedPlayer(null);
     } catch (err) {
@@ -129,14 +168,14 @@ const SessionLogger = () => {
     const playerStat = sessionStats.find(s => s.player_id === player.id) || {};
     setPlayerFormData({
       nets_attended: playerStat.nets_attended || false,
-      amount_due: playerStat.amount_due || 0,
-      session_batting_rating: playerStat.session_batting_rating || '',
-      session_bowling_rating: playerStat.session_bowling_rating || '',
-      session_fielding_rating: playerStat.session_fielding_rating || '',
-      session_fitness_rating: playerStat.session_fitness_rating || '',
-      dismissals: playerStat.dismissals || 0,
-      wickets: playerStat.wickets || 0,
-      extras: playerStat.extras || 0
+      amount_due: playerStat.amount_due !== undefined && playerStat.amount_due !== null ? String(playerStat.amount_due) : '',
+      session_batting_rating: playerStat.session_batting_rating !== undefined && playerStat.session_batting_rating !== null ? String(playerStat.session_batting_rating) : '',
+      session_bowling_rating: playerStat.session_bowling_rating !== undefined && playerStat.session_bowling_rating !== null ? String(playerStat.session_bowling_rating) : '',
+      session_fielding_rating: playerStat.session_fielding_rating !== undefined && playerStat.session_fielding_rating !== null ? String(playerStat.session_fielding_rating) : '',
+      session_fitness_rating: playerStat.session_fitness_rating !== undefined && playerStat.session_fitness_rating !== null ? String(playerStat.session_fitness_rating) : '',
+      dismissals: playerStat.dismissals !== undefined && playerStat.dismissals !== null ? String(playerStat.dismissals) : '',
+      wickets: playerStat.wickets !== undefined && playerStat.wickets !== null ? String(playerStat.wickets) : '',
+      extras: playerStat.extras !== undefined && playerStat.extras !== null ? String(playerStat.extras) : ''
     });
     setSelectedPlayer(player);
   };
@@ -163,13 +202,45 @@ const SessionLogger = () => {
     };
   };
 
-  // Export sessions to Excel
+  // Export sessions to Excel with player-level details
   const exportToExcel = () => {
-    const exportData = sessions.map(session => {
+    // Create player-level export data
+    const playerExportData = [];
+    
+    sessions.forEach(session => {
+      const sessionPlayerStats = sessionStats.filter(s => s.session_id === session.id);
+      
+      sessionPlayerStats.forEach(stat => {
+        const player = players.find(p => p.id === stat.player_id);
+        if (player) {
+          playerExportData.push({
+            'Session Date': session.session_date,
+            'Player Name': player.name,
+            'Attended': stat.nets_attended ? 'Yes' : 'No',
+            'Amount Due (£)': stat.amount_due || 0,
+            'Batting Rating': stat.session_batting_rating || '',
+            'Bowling Rating': stat.session_bowling_rating || '',
+            'Fielding Rating': stat.session_fielding_rating || '',
+            'Fitness Rating': stat.session_fitness_rating || '',
+            'Dismissals': stat.dismissals || 0,
+            'Wickets': stat.wickets || 0,
+            'Extras': stat.extras || 0,
+            'Session Notes': session.session_name || ''
+          });
+        }
+      });
+    });
+
+    // Create session summary data
+    const sessionSummaryData = sessions.map(session => {
       const stats = getSessionStats(session.id);
+      const sessionPlayerStats = sessionStats.filter(s => s.session_id === session.id);
+      const totalAmountDue = sessionPlayerStats.reduce((sum, s) => sum + (s.amount_due || 0), 0);
+      
       return {
         'Date': session.session_date,
         'Players Attended': stats.attended,
+        'Total Amount Due (£)': totalAmountDue.toFixed(2),
         'Total Dismissals': stats.totalDismissals,
         'Total Wickets': stats.totalWickets,
         'Total Extras': stats.totalExtras,
@@ -177,18 +248,39 @@ const SessionLogger = () => {
       };
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    // Create workbook with two sheets
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sessions');
     
-    worksheet['!cols'] = [
-      { wch: 12 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 12 },
-      { wch: 12 },
-      { wch: 30 }
+    // Add player details sheet
+    const playerSheet = XLSX.utils.json_to_sheet(playerExportData);
+    playerSheet['!cols'] = [
+      { wch: 12 },  // Session Date
+      { wch: 20 },  // Player Name
+      { wch: 10 },  // Attended
+      { wch: 15 },  // Amount Due
+      { wch: 14 },  // Batting Rating
+      { wch: 14 },  // Bowling Rating
+      { wch: 15 },  // Fielding Rating
+      { wch: 14 },  // Fitness Rating
+      { wch: 12 },  // Dismissals
+      { wch: 10 },  // Wickets
+      { wch: 10 },  // Extras
+      { wch: 30 }   // Session Notes
     ];
+    XLSX.utils.book_append_sheet(workbook, playerSheet, 'Player Details');
+    
+    // Add session summary sheet
+    const summarySheet = XLSX.utils.json_to_sheet(sessionSummaryData);
+    summarySheet['!cols'] = [
+      { wch: 12 },  // Date
+      { wch: 15 },  // Players Attended
+      { wch: 18 },  // Total Amount Due
+      { wch: 15 },  // Total Dismissals
+      { wch: 12 },  // Total Wickets
+      { wch: 12 },  // Total Extras
+      { wch: 30 }   // Notes
+    ];
+    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Session Summary');
     
     XLSX.writeFile(workbook, `Cricket_Sessions_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
@@ -593,65 +685,56 @@ const SessionLogger = () => {
                           Amount Due (£)
                         </label>
                         <input
-                          type="number"
-                          step="0.01"
-                          min="0"
+                          type="text"
                           value={playerFormData.amount_due}
-                          onChange={(e) => setPlayerFormData({ ...playerFormData, amount_due: parseFloat(e.target.value) || 0 })}
+                          onChange={(e) => setPlayerFormData({ ...playerFormData, amount_due: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                          placeholder="e.g., 15.00"
                         />
                       </div>
 
                       {/* Session Skills */}
                       <div>
-                        <h4 className="font-semibold text-gray-700 mb-3">Session Performance Ratings (0-10)</h4>
+                        <h4 className="font-semibold text-gray-700 mb-3">Session Performance Ratings</h4>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Batting</label>
                             <input
-                              type="number"
-                              min="0"
-                              max="10"
+                              type="text"
                               value={playerFormData.session_batting_rating}
-                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_batting_rating: parseInt(e.target.value) || '' })}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_batting_rating: e.target.value })}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                              placeholder="0-10"
+                              placeholder="Enter rating"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Bowling</label>
                             <input
-                              type="number"
-                              min="0"
-                              max="10"
+                              type="text"
                               value={playerFormData.session_bowling_rating}
-                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_bowling_rating: parseInt(e.target.value) || '' })}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_bowling_rating: e.target.value })}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                              placeholder="0-10"
+                              placeholder="Enter rating"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Fielding</label>
                             <input
-                              type="number"
-                              min="0"
-                              max="10"
+                              type="text"
                               value={playerFormData.session_fielding_rating}
-                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_fielding_rating: parseInt(e.target.value) || '' })}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_fielding_rating: e.target.value })}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                              placeholder="0-10"
+                              placeholder="Enter rating"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Fitness</label>
                             <input
-                              type="number"
-                              min="0"
-                              max="10"
+                              type="text"
                               value={playerFormData.session_fitness_rating}
-                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_fitness_rating: parseInt(e.target.value) || '' })}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_fitness_rating: e.target.value })}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                              placeholder="0-10"
+                              placeholder="Enter rating"
                             />
                           </div>
                         </div>
@@ -664,31 +747,31 @@ const SessionLogger = () => {
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Dismissals</label>
                             <input
-                              type="number"
-                              min="0"
+                              type="text"
                               value={playerFormData.dismissals}
-                              onChange={(e) => setPlayerFormData({ ...playerFormData, dismissals: parseInt(e.target.value) || 0 })}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, dismissals: e.target.value })}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                              placeholder="Enter count"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Wickets</label>
                             <input
-                              type="number"
-                              min="0"
+                              type="text"
                               value={playerFormData.wickets}
-                              onChange={(e) => setPlayerFormData({ ...playerFormData, wickets: parseInt(e.target.value) || 0 })}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, wickets: e.target.value })}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                              placeholder="Enter count"
                             />
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Extras</label>
                             <input
-                              type="number"
-                              min="0"
+                              type="text"
                               value={playerFormData.extras}
-                              onChange={(e) => setPlayerFormData({ ...playerFormData, extras: parseInt(e.target.value) || 0 })}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, extras: e.target.value })}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                              placeholder="Enter count"
                             />
                           </div>
                         </div>
