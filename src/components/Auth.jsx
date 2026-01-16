@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -11,7 +12,7 @@ const Auth = () => {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('error'); // 'error' or 'success'
 
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, resetPassword } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +20,23 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      if (isLogin) {
+      if (showResetPassword) {
+        // Password reset
+        const { error } = await resetPassword(email);
+        if (error) {
+          setMessage(error.message || 'Failed to send reset email');
+          setMessageType('error');
+        } else {
+          setMessage('Password reset email sent! Please check your inbox.');
+          setMessageType('success');
+          setEmail('');
+          // Switch back to login after 3 seconds
+          setTimeout(() => {
+            setShowResetPassword(false);
+            setMessage(null);
+          }, 3000);
+        }
+      } else if (isLogin) {
         // Login
         const { error } = await signIn(email, password);
         if (error) {
@@ -78,36 +95,47 @@ const Auth = () => {
 
         {/* Auth Card */}
         <div className="bg-white rounded-lg shadow-xl p-8">
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => {
-                setIsLogin(true);
-                setMessage(null);
-              }}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                isLogin
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <LogIn className="inline mr-2" size={18} />
-              Login
-            </button>
-            <button
-              onClick={() => {
-                setIsLogin(false);
-                setMessage(null);
-              }}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                !isLogin
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <UserPlus className="inline mr-2" size={18} />
-              Sign Up
-            </button>
-          </div>
+          {!showResetPassword && (
+            <div className="flex gap-2 mb-6">
+              <button
+                onClick={() => {
+                  setIsLogin(true);
+                  setMessage(null);
+                }}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
+                  isLogin
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <LogIn className="inline mr-2" size={18} />
+                Login
+              </button>
+              <button
+                onClick={() => {
+                  setIsLogin(false);
+                  setMessage(null);
+                }}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
+                  !isLogin
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <UserPlus className="inline mr-2" size={18} />
+                Sign Up
+              </button>
+            </div>
+          )}
+
+          {showResetPassword && (
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Reset Password</h2>
+              <p className="text-sm text-gray-600">
+                Enter your email address and we'll send you a link to reset your password.
+              </p>
+            </div>
+          )}
 
           {/* Message */}
           {message && (
@@ -153,31 +181,33 @@ const Auth = () => {
             </div>
 
             {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="••••••••"
-                  minLength={6}
-                />
+            {!showResetPassword && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="••••••••"
+                    minLength={6}
+                  />
+                </div>
+                {!isLogin && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Must be at least 6 characters
+                  </p>
+                )}
               </div>
-              {!isLogin && (
-                <p className="mt-1 text-xs text-gray-500">
-                  Must be at least 6 characters
-                </p>
-              )}
-            </div>
+            )}
 
             {/* Confirm Password (Sign Up only) */}
-            {!isLogin && (
+            {!isLogin && !showResetPassword && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Confirm Password
@@ -210,7 +240,12 @@ const Auth = () => {
                 </>
               ) : (
                 <>
-                  {isLogin ? (
+                  {showResetPassword ? (
+                    <>
+                      <Mail size={20} />
+                      <span>Send Reset Link</span>
+                    </>
+                  ) : isLogin ? (
                     <>
                       <LogIn size={20} />
                       <span>Sign In</span>
@@ -226,9 +261,39 @@ const Auth = () => {
             </button>
           </form>
 
+          {/* Forgot Password Link */}
+          {isLogin && !showResetPassword && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => {
+                  setShowResetPassword(true);
+                  setMessage(null);
+                  setPassword('');
+                }}
+                className="text-sm text-green-600 hover:text-green-700 font-medium"
+              >
+                Forgot your password?
+              </button>
+            </div>
+          )}
+
           {/* Additional Info */}
           <div className="mt-6 text-center text-sm text-gray-600">
-            {isLogin ? (
+            {showResetPassword ? (
+              <p>
+                Remember your password?{' '}
+                <button
+                  onClick={() => {
+                    setShowResetPassword(false);
+                    setIsLogin(true);
+                    setMessage(null);
+                  }}
+                  className="text-green-600 hover:text-green-700 font-medium"
+                >
+                  Back to login
+                </button>
+              </p>
+            ) : isLogin ? (
               <p>
                 Don't have an account?{' '}
                 <button
