@@ -1,7 +1,6 @@
 {
   "name": "mk-air-cricket-tracker",
   "version": "8.1.8",
-  "homepage": "https://schundi365.github.io/cricket-apps",
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.90.1",
@@ -22,7 +21,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "firebase deploy --only hosting",
+    "deploy:github": "gh-pages -d build",
     "repair:session-dates": "node src/scripts/repairSessionDates.js",
     "repair:session-dates:dry-run": "node src/scripts/repairSessionDates.js --dry-run",
     "repair:session-dates:verbose": "node src/scripts/repairSessionDates.js --dry-run --verbose"
