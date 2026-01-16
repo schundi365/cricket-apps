@@ -10,11 +10,25 @@ const SessionLogger = () => {
   const [showAddSession, setShowAddSession] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
   const [showAttendance, setShowAttendance] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
   
   // Form state for new/edit session
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     notes: ''
+  });
+
+  // Form state for player detail modal
+  const [playerFormData, setPlayerFormData] = useState({
+    nets_attended: false,
+    amount_due: 0,
+    session_batting_rating: '',
+    session_bowling_rating: '',
+    session_fielding_rating: '',
+    session_fitness_rating: '',
+    dismissals: 0,
+    wickets: 0,
+    extras: 0
   });
 
   // Get statistics for selected session
@@ -85,19 +99,35 @@ const SessionLogger = () => {
     }
   };
 
-  // Toggle player attendance
-  const toggleAttendance = async (playerId, currentStatus) => {
+  // Update player session details (amount, skills, stats)
+  const updatePlayerDetails = async (playerId, updates) => {
     if (!selectedSession) return;
     
     try {
-      await updateStatistic(playerId, {
-        nets_attended: !currentStatus
-      });
+      await updateStatistic(playerId, updates);
       await refetchStats();
+      setSelectedPlayer(null);
     } catch (err) {
-      console.error('Attendance error:', err);
-      alert(err.message || 'Failed to update attendance');
+      console.error('Update error:', err);
+      alert(err.message || 'Failed to update player details');
     }
+  };
+
+  // Open player detail modal and initialize form
+  const openPlayerModal = (player) => {
+    const playerStat = sessionStats.find(s => s.player_id === player.id) || {};
+    setPlayerFormData({
+      nets_attended: playerStat.nets_attended || false,
+      amount_due: playerStat.amount_due || 0,
+      session_batting_rating: playerStat.session_batting_rating || '',
+      session_bowling_rating: playerStat.session_bowling_rating || '',
+      session_fielding_rating: playerStat.session_fielding_rating || '',
+      session_fitness_rating: playerStat.session_fitness_rating || '',
+      dismissals: playerStat.dismissals || 0,
+      wickets: playerStat.wickets || 0,
+      extras: playerStat.extras || 0
+    });
+    setSelectedPlayer(player);
   };
 
   // Start editing a session
@@ -471,20 +501,21 @@ const SessionLogger = () => {
             {/* Player Attendance Card */}
             {showAttendance && (
               <div className="bg-white rounded-lg shadow-lg p-6">
-                <h4 className="text-lg font-bold mb-4">Player Attendance</h4>
+                <h4 className="text-lg font-bold mb-4">Player Session Details</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  Click on a player to mark them as present or absent for this session
+                  Click on a player to log attendance, amount due, skills, and performance
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
                   {players.map(player => {
                     const playerStat = sessionStats.find(s => s.player_id === player.id);
                     const isPresent = playerStat?.nets_attended || false;
+                    const amountDue = playerStat?.amount_due || 0;
                     
                     return (
                       <button
                         key={player.id}
-                        onClick={() => toggleAttendance(player.id, isPresent)}
+                        onClick={() => openPlayerModal(player)}
                         className={`p-4 rounded-lg border-2 transition-all text-left ${
                           isPresent
                             ? 'border-green-500 bg-green-50 hover:bg-green-100'
@@ -501,6 +532,7 @@ const SessionLogger = () => {
                         </div>
                         <div className="mt-1 text-xs text-gray-500">
                           {isPresent ? 'Present' : 'Absent'}
+                          {amountDue > 0 && ` • £${amountDue.toFixed(2)}`}
                         </div>
                       </button>
                     );
@@ -512,6 +544,163 @@ const SessionLogger = () => {
                     No players found. Add players first to mark attendance.
                   </p>
                 )}
+              </div>
+            )}
+
+            {/* Player Detail Modal */}
+            {selectedPlayer && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                  <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-2xl font-bold text-gray-800">{selectedPlayer.name}</h3>
+                      <button
+                        onClick={() => setSelectedPlayer(null)}
+                        className="p-2 hover:bg-gray-100 rounded-lg"
+                      >
+                        <X size={24} />
+                      </button>
+                    </div>
+
+                    <div className="space-y-6">
+                      {/* Attendance */}
+                      <div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={playerFormData.nets_attended}
+                            onChange={(e) => setPlayerFormData({ ...playerFormData, nets_attended: e.target.checked })}
+                            className="w-5 h-5 text-green-600 rounded focus:ring-2 focus:ring-green-500"
+                          />
+                          <span className="font-semibold text-gray-700">Player Attended Session</span>
+                        </label>
+                      </div>
+
+                      {/* Amount Due */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Amount Due (£)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={playerFormData.amount_due}
+                          onChange={(e) => setPlayerFormData({ ...playerFormData, amount_due: parseFloat(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                        />
+                      </div>
+
+                      {/* Session Skills */}
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-3">Session Performance Ratings (0-10)</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Batting</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="10"
+                              value={playerFormData.session_batting_rating}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_batting_rating: parseInt(e.target.value) || '' })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                              placeholder="0-10"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Bowling</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="10"
+                              value={playerFormData.session_bowling_rating}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_bowling_rating: parseInt(e.target.value) || '' })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                              placeholder="0-10"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Fielding</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="10"
+                              value={playerFormData.session_fielding_rating}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_fielding_rating: parseInt(e.target.value) || '' })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                              placeholder="0-10"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Fitness</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="10"
+                              value={playerFormData.session_fitness_rating}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, session_fitness_rating: parseInt(e.target.value) || '' })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                              placeholder="0-10"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Performance Stats */}
+                      <div>
+                        <h4 className="font-semibold text-gray-700 mb-3">Performance Statistics</h4>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Dismissals</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={playerFormData.dismissals}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, dismissals: parseInt(e.target.value) || 0 })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Wickets</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={playerFormData.wickets}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, wickets: parseInt(e.target.value) || 0 })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Extras</label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={playerFormData.extras}
+                              onChange={(e) => setPlayerFormData({ ...playerFormData, extras: parseInt(e.target.value) || 0 })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-3 pt-4 border-t">
+                        <button
+                          onClick={() => updatePlayerDetails(selectedPlayer.id, playerFormData)}
+                          className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                        >
+                          Save Details
+                        </button>
+                        <button
+                          onClick={() => setSelectedPlayer(null)}
+                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
