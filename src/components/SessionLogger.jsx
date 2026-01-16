@@ -52,11 +52,22 @@ const SessionLogger = () => {
     }
 
     try {
-      await createSession({
+      const sessionId = await createSession({
         date: formData.date,
         notes: formData.notes || ''
       });
+      
+      // Create a session object to select immediately
+      const newSession = {
+        id: sessionId,
+        session_date: formData.date,
+        session_name: formData.notes || '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
       resetForm();
+      setSelectedSession(newSession);
     } catch (err) {
       alert(err.message || 'Failed to create session');
     }
