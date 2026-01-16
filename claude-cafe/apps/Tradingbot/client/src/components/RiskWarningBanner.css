@@ -1,0 +1,151 @@
+.risk-warning-banner {
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.risk-warning-banner.warning {
+  background-color: #fff3cd;
+  border: 2px solid #ffc107;
+  border-left: 6px solid #ffc107;
+}
+
+.risk-warning-banner.critical {
+  background-color: #ffebee;
+  border: 2px solid #f44336;
+  border-left: 6px solid #f44336;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(244, 67, 54, 0.5);
+  }
+}
+
+.banner-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.banner-icon {
+  font-size: 1.8em;
+}
+
+.banner-title {
+  margin: 0;
+  color: #333;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.risk-warning-banner.critical .banner-title {
+  color: #c62828;
+}
+
+.risk-warning-banner.warning .banner-title {
+  color: #f57c00;
+}
+
+.banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.issue-item {
+  padding: 12px;
+  border-radius: 6px;
+  background-color: white;
+}
+
+.issue-item.critical {
+  border-left: 4px solid #f44336;
+}
+
+.issue-item.warning {
+  border-left: 4px solid #ff9800;
+}
+
+.issue-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.issue-icon {
+  font-size: 1.2em;
+  flex-shrink: 0;
+}
+
+.issue-text {
+  color: #333;
+  font-weight: 600;
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
+.issue-suggestion {
+  color: #666;
+  font-size: 0.9em;
+  padding-left: 32px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.banner-footer {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.footer-text {
+  margin: 0;
+  color: #c62828;
+  font-weight: 600;
+  font-size: 0.95em;
+  text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .risk-warning-banner {
+    padding: 15px;
+  }
+
+  .banner-header {
+    gap: 8px;
+  }
+
+  .banner-icon {
+    font-size: 1.5em;
+  }
+
+  .banner-title {
+    font-size: 1.1em;
+  }
+
+  .issue-suggestion {
+    padding-left: 0;
+    margin-top: 5px;
+  }
+}

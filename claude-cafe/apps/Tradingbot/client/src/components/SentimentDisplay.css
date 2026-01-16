@@ -1,0 +1,273 @@
+.sentiment-display {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sentiment-display h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.sentiment-display h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.no-asset,
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 14px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.sentiment-indicator {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.sentiment-indicator.bullish {
+  background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+  border: 2px solid #4caf50;
+}
+
+.sentiment-indicator.bearish {
+  background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+  border: 2px solid #f44336;
+}
+
+.sentiment-indicator.neutral {
+  background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+  border: 2px solid #ffc107;
+}
+
+.sentiment-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.sentiment-info {
+  flex: 1;
+}
+
+.sentiment-label {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.sentiment-strength {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.sentiment-strength.weak {
+  color: #ff9800;
+}
+
+.sentiment-strength.moderate {
+  color: #2196f3;
+}
+
+.sentiment-strength.strong {
+  color: #4caf50;
+}
+
+.sentiment-score-bar {
+  margin-bottom: 24px;
+}
+
+.score-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.score-bar-container {
+  position: relative;
+  height: 32px;
+  background: #e0e0e0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.score-bar-fill.bullish {
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+}
+
+.score-bar-fill.bearish {
+  background: linear-gradient(90deg, #f44336, #e57373);
+}
+
+.score-bar-fill.neutral {
+  background: linear-gradient(90deg, #ffc107, #ffeb3b);
+}
+
+.score-value {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+}
+
+.key-indicators {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.indicator-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.indicator-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.indicator-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.indicator-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+.indicator-value.positive {
+  color: #4caf50;
+}
+
+.indicator-value.negative {
+  color: #f44336;
+}
+
+.indicator-value.overbought {
+  color: #f44336;
+}
+
+.indicator-value.oversold {
+  color: #4caf50;
+}
+
+.indicator-value.macd-bullish {
+  color: #4caf50;
+}
+
+.indicator-value.macd-bearish {
+  color: #f44336;
+}
+
+.indicator-value.macd-neutral {
+  color: #ff9800;
+}
+
+.sentiment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.refresh-btn {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.refresh-btn:hover {
+  background: #1976d2;
+}
+
+.retry-btn {
+  width: 100%;
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.retry-btn:hover {
+  background: #1976d2;
+}
+
+.last-update {
+  font-size: 12px;
+  color: #999;
+}
+
+@media (max-width: 768px) {
+  .indicator-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sentiment-indicator {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .sentiment-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

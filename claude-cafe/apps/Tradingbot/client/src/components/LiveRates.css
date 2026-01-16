@@ -1,0 +1,81 @@
+.rates-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.rates-card h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.rates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-style: italic;
+}
+
+.rate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rate-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pair-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.rate-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.rate-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.rate-change {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.rate-change.positive {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.rate-change.negative {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.rate-change.neutral {
+  background: #f5f5f5;
+  color: #757575;
+}
