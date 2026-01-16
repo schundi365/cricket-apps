@@ -1,46 +1,26 @@
-import React, { useState } from 'react';
-import { Search, TrendingUp, Award, Users, Calendar, UserPlus, Download } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, TrendingUp, Award, Users, Calendar, UserPlus, Download, Settings, FileText } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import AdminPanel from './components/AdminPanel';
+import SessionLogger from './components/SessionLogger';
+import { usePlayers, useSkillsRatings, useNetsSessions, useNetsStatistics } from './hooks';
 
 const TrainingTracker = () => {
-  const players = [
-    "Aditya Aggarwal", "Deepak Aggarwal", "Vijay Anand Pandian", "Sankar Krishna Anne",
-    "Vijay Baburaj", "Basil Baby", "Deepak Balakrishnan", "Sathiya Sriram Balakrishnan",
-    "Santosh Ballary", "Sunny Batra", "Viren Bhatia", "Deepak Bhatt", "Rohit Bhola",
-    "Anand Kumar Billakanti", "Arun Bonam", "Vijay Bude", "Harish Shetty", "Varun Chadha",
-    "Abdallah Mohammed Zubair Chaiwalla", "Khurram Chaiwalla", "Utham Kumar Chandra",
-    "Krishna Chandran", "Prasanna Chandran", "Praveen Chandran", "Ashlesh Chandrapu",
-    "Deepender Chauhan", "Naga Sushen Chukka", "Srikanth Chundi", "Samik Dandy",
-    "Mohan Raj Deenathayalan", "Vijay Dorepally", "Kapil Dubey", "Maneesh G", "Sunil Gaurav",
-    "Karthik Gogga", "Ashok K Govada", "Rahul Gupta", "Shree Hande", "Abhinav Iarala",
-    "Advait Reddy Jakku", "Balaji Kumar Jinka", "Gimil Joseph", "Taran Jouhal",
-    "Surender Karanam", "Karan Kashyap", "Shankker Kasinath", "Neel Kavali",
-    "Mohamed Khalid", "Shashi Kiran", "Aravind Kolapalli", "Nithin Kothakota",
-    "Adi Kotian", "Deva P", "Aniket Kulkarni", "Arjun Kulkarni", "Devesh Kumar",
-    "Senthil Kumar", "Sharad Kumar", "Vijeth Kumar", "Vinodh Kumar", "Ravikumar Kumashi",
-    "Jayesh Magodia", "Ibrahim Malik", "Vaman Mallipedda", "Vandit Maram",
-    "Shailendra Mayekar", "Kavinshankar Meenakshisundaram",
-    "Mohammed Zubair Mohammed Yousuf Chaiwalla", "Vasu Muvvala",
-    "Ramasubramanian Namachivayam", "Shiva Namala", "Rajesh Varma", "Yash Reddy",
-    "Srinidhi Narasimhan", "Siddhu Narreddy", "Abilash Natarajan", "Himmat Natkar",
-    "Eashaan Nune", "Manas Ranjan Panda", "Jeen Pandya", "Jignesh Pandya",
-    "Aditya Panwar", "Purus Paran", "Vikram Paritala", "Naresh Paruchuri",
-    "Pinakin Patel", "Sai Parasurama Pilla", "Yashaswi Pokklandra Kumar", "Anshul Poothi",
-    "Chander Poothi", "Saish Prabhu", "Brijesh Pradhan", "Surya Prakash Kv",
-    "Swarish Pulimi", "Sharat Putta", "Aneesh Pyaraka", "Raghav Pyaraka", "Rishi Raavi",
-    "Harish Radhakrishnan", "Rajesh Rajamannaar", "Prasana R", "Venkatesh Ravikumar",
-    "Nandeep Ravindranath", "Rama Reddy", "Suprabath Reddy", "Saravana S",
-    "Sri Baba Narayan Sakamuri", "Pradeep Samiappan", "Chandan Reddy Sappidi",
-    "Yatin Sapra", "Sunit Sar", "Daniel Seelam", "Manoj Nirupth Seelapaga",
-    "Amardeep Sehgal", "Dipak Senapati", "Vatsan S", "Jayesh Shah", "Abhishek Sharma",
-    "Gorang Sharma", "Jatin Sharma", "Rajeev Sharma", "Sumeet Sharma",
-    "Niraj Shetgaonkar", "Mangal Singh", "Venkat Siva", "Anup Sreekumaran",
-    "Dhandapani Srinivasan", "Nirmal Sudan", "Amir Taj", "Nirav Thakkar",
-    "Punit Thakkar", "Praveen Thottempudi", "Ashwin Tigdoli", "Kian Tigdoli",
-    "Chris Timms", "Amit Trivedi", "Srikiran Valluripalli", "Sree Vatsan",
-    "Charantej Venkata", "Amit Verma", "Srishty Raj Vij", "Veeresh Vishnupanthulu",
-    "Aravindan Vivekanandan", "Pravin Yadav", "Arbaaz Zahid"
-  ];
+  // Fetch players from Supabase
+  const { players: playersFromDb, loading: playersLoading, error: playersError, refetch: refetchPlayers } = usePlayers();
+  
+  // Fetch skills ratings from Supabase
+  const { ratings: ratingsMap, loading: ratingsLoading, error: ratingsError, updateRating: updateRatingInDb } = useSkillsRatings();
+  
+  // Fetch nets sessions from Supabase
+  const { sessions, loading: sessionsLoading, error: sessionsError } = useNetsSessions();
+  
+  // For simplicity, we'll use the most recent session or create a default one
+  // In a full implementation, you'd have UI to select/create sessions
+  const currentSessionId = sessions.length > 0 ? sessions[0].id : null;
+  
+  // Fetch nets statistics for current session
+  const { statistics, loading: statisticsLoading, error: statisticsError, updateStatistic } = useNetsStatistics(currentSessionId);
 
   const skillCategories = [
     { name: 'Batting', skills: ['Technique', 'Shot Selection', 'Footwork', 'Power'] },
@@ -51,20 +31,61 @@ const TrainingTracker = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [ratings, setRatings] = useState({});
-  const [netsData, setNetsData] = useState({});
   const [view, setView] = useState('list');
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState('');
-  const [playersList, setPlayersList] = useState(players);
+
+  // Use players directly from database
+  const playersList = playersFromDb.map(player => player.name).sort();
+  
+  // Helper function to get player ID by name
+  const getPlayerIdByName = (playerName) => {
+    const player = playersFromDb.find(p => p.name === playerName);
+    return player?.id;
+  };
+  
+  // Helper function to get rating for a player by name
+  const getPlayerRating = (playerName) => {
+    const playerId = getPlayerIdByName(playerName);
+    if (!playerId) return null;
+    return ratingsMap.get(playerId);
+  };
+  
+  // Helper function to get nets statistics for a player
+  const getPlayerNetsStats = (playerName) => {
+    const playerId = getPlayerIdByName(playerName);
+    if (!playerId) return null;
+    return statistics.find(stat => stat.player_id === playerId);
+  };
+  
+  // Aggregate nets data across all sessions for display
+  // Note: This is a simplified implementation. In production, you'd aggregate across all sessions
+  const netsData = useMemo(() => {
+    const data = {};
+    playersFromDb.forEach(player => {
+      const stats = getPlayerNetsStats(player.name);
+      if (stats) {
+        data[player.name] = {
+          presentInNets: stats.attended ? 1 : 0,
+          worksOnTechnique: 'No', // This field doesn't exist in DB, keeping for UI compatibility
+          timesGotOut: stats.dismissals || 0,
+          wicketsTaken: stats.wickets || 0,
+          bowlingExtras: stats.extras || 0
+        };
+      }
+    });
+    return data;
+  }, [playersFromDb, statistics]);
 
   const filteredPlayers = playersList.filter(player =>
     player.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const addPlayer = () => {
-    if (newPlayerName.trim() && !playersList.includes(newPlayerName.trim())) {
-      setPlayersList([...playersList, newPlayerName.trim()].sort());
+    // TODO: Implement database insertion for new players
+    // This will be implemented in a future task
+    if (newPlayerName.trim()) {
+      alert('Adding players to the database will be implemented in a future update.');
       setNewPlayerName('');
       setShowAddPlayer(false);
     }
@@ -72,7 +93,7 @@ const TrainingTracker = () => {
 
   const downloadExcel = () => {
     const exportData = playersList.map(player => {
-      const playerRatings = ratings[player] || {};
+      const playerRating = getPlayerRating(player);
       const playerNets = netsData[player] || {};
       
       const row = {
@@ -85,13 +106,13 @@ const TrainingTracker = () => {
         'Bowling Extras': playerNets.bowlingExtras || 0,
       };
 
-      // Add all skill ratings
-      skillCategories.forEach(category => {
-        category.skills.forEach(skill => {
-          const key = `${category.name}-${skill}`;
-          row[`${category.name} - ${skill}`] = playerRatings[key] || 0;
-        });
-      });
+      // Add skill ratings from database
+      if (playerRating) {
+        row['Batting'] = playerRating.batting || 0;
+        row['Bowling'] = playerRating.bowling || 0;
+        row['Fielding'] = playerRating.fielding || 0;
+        row['Fitness'] = playerRating.fitness || 0;
+      }
 
       // Add calculated stats
       if (playerNets.presentInNets > 0) {
@@ -120,29 +141,79 @@ const TrainingTracker = () => {
     XLSX.writeFile(workbook, `MK_Air_Cricket_Club_Stats_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-  const updateRating = (player, category, skill, value) => {
-    setRatings(prev => ({
-      ...prev,
-      [player]: {
-        ...prev[player],
-        [`${category}-${skill}`]: value
-      }
-    }));
+  const updateRating = async (player, category, skill, value) => {
+    const playerId = getPlayerIdByName(player);
+    if (!playerId) {
+      console.error('Player not found:', player);
+      return;
+    }
+
+    // Map category to database field
+    const fieldMap = {
+      'Batting': 'batting',
+      'Bowling': 'bowling',
+      'Fielding': 'fielding',
+      'Fitness': 'fitness'
+    };
+
+    const field = fieldMap[category];
+    if (!field) {
+      console.error('Unknown category:', category);
+      return;
+    }
+
+    try {
+      await updateRatingInDb(playerId, { [field]: value });
+    } catch (err) {
+      console.error('Failed to update rating:', err);
+      alert(err.message || 'Failed to save rating. Please try again.');
+    }
   };
 
-  const updateNetsData = (player, field, value) => {
-    setNetsData(prev => ({
-      ...prev,
-      [player]: {
-        ...prev[player],
-        [field]: value
-      }
-    }));
+  const updateNetsData = async (player, field, value) => {
+    const playerId = getPlayerIdByName(player);
+    if (!playerId || !currentSessionId) {
+      console.error('Player or session not found:', player, currentSessionId);
+      return;
+    }
+
+    // Map UI fields to database fields
+    const fieldMap = {
+      'presentInNets': 'attended',
+      'timesGotOut': 'dismissals',
+      'wicketsTaken': 'wickets',
+      'bowlingExtras': 'extras'
+    };
+
+    const dbField = fieldMap[field];
+    if (!dbField) {
+      // worksOnTechnique is not in DB, skip it
+      if (field === 'worksOnTechnique') return;
+      console.error('Unknown field:', field);
+      return;
+    }
+
+    try {
+      // Convert presentInNets (number) to attended (boolean)
+      const dbValue = field === 'presentInNets' ? value > 0 : value;
+      await updateStatistic(playerId, { [dbField]: dbValue });
+    } catch (err) {
+      console.error('Failed to update nets data:', err);
+      alert(err.message || 'Failed to save nets data. Please try again.');
+    }
   };
 
   const getPlayerAverage = (player) => {
-    const playerRatings = ratings[player] || {};
-    const values = Object.values(playerRatings).filter(v => v > 0);
+    const playerRating = getPlayerRating(player);
+    if (!playerRating) return 0;
+    
+    const values = [
+      playerRating.batting,
+      playerRating.bowling,
+      playerRating.fielding,
+      playerRating.fitness
+    ].filter(v => v && v > 0);
+    
     if (values.length === 0) return 0;
     return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
   };
@@ -184,14 +255,30 @@ const TrainingTracker = () => {
               <button
                 onClick={() => setView('list')}
                 className={`px-4 py-2 rounded-lg ${view === 'list' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                title="Player List"
               >
                 <Users size={20} />
               </button>
               <button
                 onClick={() => setView('leaderboard')}
                 className={`px-4 py-2 rounded-lg ${view === 'leaderboard' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                title="Leaderboard"
               >
                 <Award size={20} />
+              </button>
+              <button
+                onClick={() => setView('sessions')}
+                className={`px-4 py-2 rounded-lg ${view === 'sessions' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                title="Session Logger"
+              >
+                <FileText size={20} />
+              </button>
+              <button
+                onClick={() => setView('admin')}
+                className={`px-4 py-2 rounded-lg ${view === 'admin' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                title="Admin Panel"
+              >
+                <Settings size={20} />
               </button>
               <button
                 onClick={() => setShowAddPlayer(true)}
@@ -221,6 +308,42 @@ const TrainingTracker = () => {
             />
           </div>
         </div>
+
+        {/* Loading State */}
+        {(playersLoading || ratingsLoading || sessionsLoading || statisticsLoading) && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg shadow-lg p-6 mb-6">
+            <div className="flex items-center justify-center gap-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <p className="text-blue-700 font-medium">Loading data...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {(playersError || ratingsError || sessionsError || statisticsError) && (
+          <div className="bg-red-50 border border-red-200 rounded-lg shadow-lg p-6 mb-6">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-red-800 font-semibold mb-1">Error Loading Data</h3>
+                {playersError && <p className="text-red-700 mb-2">{playersError.message}</p>}
+                {ratingsError && <p className="text-red-700 mb-2">{ratingsError.message}</p>}
+                {sessionsError && <p className="text-red-700 mb-2">{sessionsError.message}</p>}
+                {statisticsError && <p className="text-red-700 mb-2">{statisticsError.message}</p>}
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Add Player Modal */}
         {showAddPlayer && (
@@ -309,6 +432,18 @@ const TrainingTracker = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Admin View */}
+        {view === 'admin' && (
+          <div className="bg-white rounded-lg shadow-lg">
+            <AdminPanel />
+          </div>
+        )}
+
+        {/* Session Logger View */}
+        {view === 'sessions' && (
+          <SessionLogger />
         )}
 
         {/* Player List View */}
@@ -480,39 +615,45 @@ const TrainingTracker = () => {
 
               {/* Skills Rating */}
               <h3 className="text-lg font-bold text-gray-700 mb-4">Skills Rating (1-10)</h3>
-              {skillCategories.map(category => (
-                <div key={category.name} className="mb-6 pb-6 border-b last:border-b-0">
-                  <h4 className="text-md font-bold text-gray-700 mb-4">{category.name}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {category.skills.map(skill => {
-                      const key = `${category.name}-${skill}`;
-                      const currentRating = ratings[selectedPlayer]?.[key] || 0;
-                      
-                      return (
-                        <div key={skill} className="bg-gray-50 p-4 rounded-lg">
-                          <div className="flex justify-between mb-2">
-                            <span className="font-medium text-gray-700">{skill}</span>
-                            <span className="font-bold text-green-600">{currentRating}/10</span>
-                          </div>
-                          <div className="flex gap-1">
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => (
-                              <button
-                                key={value}
-                                onClick={() => updateRating(selectedPlayer, category.name, skill, value)}
-                                className={`flex-1 h-8 rounded transition-colors ${
-                                  value <= currentRating
-                                    ? 'bg-green-500 hover:bg-green-600'
-                                    : 'bg-gray-200 hover:bg-gray-300'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
+              {skillCategories.map(category => {
+                const playerRating = getPlayerRating(selectedPlayer);
+                const fieldMap = {
+                  'Batting': 'batting',
+                  'Bowling': 'bowling',
+                  'Fielding': 'fielding',
+                  'Fitness': 'fitness'
+                };
+                const field = fieldMap[category.name];
+                const currentRating = playerRating?.[field] || 0;
+                
+                return (
+                  <div key={category.name} className="mb-6 pb-6 border-b last:border-b-0">
+                    <h4 className="text-md font-bold text-gray-700 mb-4">{category.name}</h4>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex justify-between mb-2">
+                        <span className="font-medium text-gray-700">Overall {category.name} Rating</span>
+                        <span className="font-bold text-green-600">{currentRating}/10</span>
+                      </div>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => (
+                          <button
+                            key={value}
+                            onClick={() => updateRating(selectedPlayer, category.name, null, value)}
+                            className={`flex-1 h-8 rounded transition-colors ${
+                              value <= currentRating
+                                ? 'bg-green-500 hover:bg-green-600'
+                                : 'bg-gray-200 hover:bg-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <div className="mt-2 text-sm text-gray-600">
+                        <p>Skills: {category.skills.join(', ')}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
