@@ -1,12 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { Search, TrendingUp, Award, Users, Calendar, UserPlus, Download, Settings, FileText } from 'lucide-react';
+import { Search, TrendingUp, Award, Users, Calendar, UserPlus, Download, Settings, FileText, LogOut } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import AdminPanel from './components/AdminPanel';
 import SessionLogger from './components/SessionLogger';
 import PerformanceImprovement from './components/PerformanceImprovement';
+import Auth from './components/Auth';
+import { useAuth } from './contexts/AuthContext';
 import { usePlayers, useSkillsRatings, useNetsSessions, useNetsStatistics } from './hooks';
 
 const TrainingTracker = () => {
+  const { user, loading: authLoading, signOut } = useAuth();
+  
   // Fetch players from Supabase
   const { players: playersFromDb, loading: playersLoading, error: playersError, refetch: refetchPlayers } = usePlayers();
   
@@ -81,6 +85,23 @@ const TrainingTracker = () => {
   const filteredPlayers = playersList.filter(player =>
     player.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show auth screen if not logged in
+  if (!user) {
+    return <Auth />;
+  }
 
   const addPlayer = () => {
     // TODO: Implement database insertion for new players
@@ -301,6 +322,14 @@ const TrainingTracker = () => {
               >
                 <Download size={20} />
                 <span className="hidden md:inline">Export</span>
+              </button>
+              <button
+                onClick={signOut}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 flex items-center gap-2"
+                title="Sign Out"
+              >
+                <LogOut size={20} />
+                <span className="hidden md:inline">Sign Out</span>
               </button>
             </div>
           </div>
