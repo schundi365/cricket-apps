@@ -72,7 +72,6 @@ export function useNetsSessions() {
    * 
    * @param {Object} sessionData - The session data
    * @param {Date|string} sessionData.date - The session date
-   * @param {number} sessionData.amount_due - Amount due for the session
    * @param {string} sessionData.notes - Optional notes for the session
    * @returns {Promise<string>} The ID of the created session
    */
@@ -81,14 +80,14 @@ export function useNetsSessions() {
       throw new Error('Supabase client not initialized');
     }
 
-    const { date, amount_due = 0, notes = '' } = sessionData;
+    const { date, notes = '' } = sessionData;
 
     // If offline, queue the operation and return a temporary ID
     if (!isOnline()) {
       const tempId = `temp_${Date.now()}`;
       queueOperation({
         type: 'create_session',
-        data: { date, amount_due, notes },
+        data: { date, notes },
         timestamp: Date.now()
       });
       
@@ -96,7 +95,6 @@ export function useNetsSessions() {
       const optimisticSession = {
         id: tempId,
         session_date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
-        amount_due: amount_due || 0,
         session_name: notes || '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -112,7 +110,6 @@ export function useNetsSessions() {
           .from('nets_sessions')
           .insert({
             session_date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
-            amount_due: amount_due || 0,
             session_name: notes || ''
           })
           .select()
@@ -129,8 +126,14 @@ export function useNetsSessions() {
       return data.id;
     } catch (err) {
       console.error('Error creating nets session:', err);
+      console.error('Error details:', {
+        message: err.message,
+        code: err.code,
+        details: err.details,
+        hint: err.hint
+      });
       const userFriendlyError = new Error(
-        'Unable to create nets session. Please check your connection and try again.'
+        `Unable to create nets session: ${err.message || 'Please check your connection and try again.'}`
       );
       userFriendlyError.originalError = err;
       throw userFriendlyError;

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, DollarSign, Users, Plus, Edit2, Trash2, Save, X, Download, CheckCircle, Circle } from 'lucide-react';
+import { Calendar, Users, Plus, Edit2, Trash2, Save, X, Download, CheckCircle, Circle } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { useNetsSessions, usePlayers, useNetsStatistics } from '../hooks';
 
@@ -14,7 +14,6 @@ const SessionLogger = () => {
   // Form state for new/edit session
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
-    amount_due: '',
     notes: ''
   });
 
@@ -25,7 +24,6 @@ const SessionLogger = () => {
   const resetForm = () => {
     setFormData({
       date: new Date().toISOString().split('T')[0],
-      amount_due: '',
       notes: ''
     });
     setEditingSession(null);
@@ -42,7 +40,6 @@ const SessionLogger = () => {
     try {
       await createSession({
         date: formData.date,
-        amount_due: parseFloat(formData.amount_due) || 0,
         notes: formData.notes || ''
       });
       resetForm();
@@ -60,7 +57,6 @@ const SessionLogger = () => {
     try {
       await updateSession(editingSession.id, {
         session_date: formData.date,
-        amount_due: parseFloat(formData.amount_due) || 0,
         session_name: formData.notes || ''
       });
       resetForm();
@@ -109,7 +105,6 @@ const SessionLogger = () => {
     setEditingSession(session);
     setFormData({
       date: session.session_date,
-      amount_due: session.amount_due || '',
       notes: session.session_name || ''
     });
     setShowAddSession(false);
@@ -133,7 +128,6 @@ const SessionLogger = () => {
       const stats = getSessionStats(session.id);
       return {
         'Date': session.session_date,
-        'Amount Due': session.amount_due || 0,
         'Players Attended': stats.attended,
         'Total Dismissals': stats.totalDismissals,
         'Total Wickets': stats.totalWickets,
@@ -147,7 +141,6 @@ const SessionLogger = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sessions');
     
     worksheet['!cols'] = [
-      { wch: 12 },
       { wch: 12 },
       { wch: 15 },
       { wch: 15 },
@@ -167,11 +160,7 @@ const SessionLogger = () => {
   // Calculate totals
   const totals = useMemo(() => {
     return {
-      totalSessions: sessions.length,
-      totalAmountDue: sessions.reduce((sum, s) => sum + (s.amount_due || 0), 0),
-      averageAmountDue: sessions.length > 0 
-        ? sessions.reduce((sum, s) => sum + (s.amount_due || 0), 0) / sessions.length 
-        : 0
+      totalSessions: sessions.length
     };
   }, [sessions]);
 
@@ -204,7 +193,7 @@ const SessionLogger = () => {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
               <div className="flex items-center gap-3">
                 <Calendar className="text-blue-600" size={32} />
@@ -215,22 +204,12 @@ const SessionLogger = () => {
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
-              <div className="flex items-center gap-3">
-                <DollarSign className="text-green-600" size={32} />
-                <div>
-                  <p className="text-sm text-gray-600">Total Amount Due</p>
-                  <p className="text-2xl font-bold text-gray-800">₹{totals.totalAmountDue.toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-            
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
               <div className="flex items-center gap-3">
                 <Users className="text-purple-600" size={32} />
                 <div>
-                  <p className="text-sm text-gray-600">Average Amount/Session</p>
-                  <p className="text-2xl font-bold text-gray-800">₹{totals.averageAmountDue.toFixed(2)}</p>
+                  <p className="text-sm text-gray-600">Total Players</p>
+                  <p className="text-2xl font-bold text-gray-800">{players.length}</p>
                 </div>
               </div>
             </div>
@@ -261,7 +240,7 @@ const SessionLogger = () => {
               {editingSession ? 'Edit Session' : 'Add New Session'}
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Session Date *
@@ -272,21 +251,6 @@ const SessionLogger = () => {
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                   required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amount Due (₹)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.amount_due}
-                  onChange={(e) => setFormData({ ...formData, amount_due: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                  placeholder="0.00"
                 />
               </div>
               
@@ -333,9 +297,6 @@ const SessionLogger = () => {
                     Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amount Due
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Players Attended
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -358,7 +319,7 @@ const SessionLogger = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {sortedSessions.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
                       <Calendar className="mx-auto mb-3 text-gray-400" size={48} />
                       <p className="text-lg font-medium">No sessions yet</p>
                       <p className="text-sm">Click "New Session" to create your first session</p>
@@ -384,14 +345,6 @@ const SessionLogger = () => {
                                 month: 'short',
                                 year: 'numeric'
                               })}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-1">
-                            <DollarSign size={16} className="text-green-600" />
-                            <span className="font-semibold text-green-700">
-                              ₹{(session.amount_due || 0).toFixed(2)}
                             </span>
                           </div>
                         </td>
@@ -476,10 +429,6 @@ const SessionLogger = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Date:</span>
                       <span className="font-medium">{selectedSession.session_date}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Amount Due:</span>
-                      <span className="font-medium text-green-700">₹{(selectedSession.amount_due || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Notes:</span>
