@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, DollarSign, Users, Plus, Edit2, Trash2, Save, X, Download } from 'lucide-react';
+import { Calendar, DollarSign, Users, Plus, Edit2, Trash2, Save, X, Download, CheckCircle, Circle } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { useNetsSessions, usePlayers, useNetsStatistics } from '../hooks';
 
 const SessionLogger = () => {
-  const { sessions, loading, error, createSession, updateSession, deleteSession } = useNetsSessions();
+  const { sessions, loading, error, createSession, updateSession, deleteSession, refetch } = useNetsSessions();
   const { players } = usePlayers();
   const [editingSession, setEditingSession] = useState(null);
   const [showAddSession, setShowAddSession] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [showAttendance, setShowAttendance] = useState(false);
   
   // Form state for new/edit session
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const SessionLogger = () => {
   });
 
   // Get statistics for selected session
-  const { statistics: sessionStats } = useNetsStatistics(selectedSession?.id);
+  const { statistics: sessionStats, updateStatistic, refetch: refetchStats } = useNetsStatistics(selectedSession?.id);
 
   // Reset form
   const resetForm = () => {
@@ -58,12 +59,14 @@ const SessionLogger = () => {
 
     try {
       await updateSession(editingSession.id, {
-        date: formData.date,
+        session_date: formData.date,
         amount_due: parseFloat(formData.amount_due) || 0,
-        notes: formData.notes || ''
+        session_name: formData.notes || ''
       });
       resetForm();
+      await refetch();
     } catch (err) {
+      console.error('Update error:', err);
       alert(err.message || 'Failed to update session');
     }
   };
@@ -79,8 +82,25 @@ const SessionLogger = () => {
       if (selectedSession?.id === sessionId) {
         setSelectedSession(null);
       }
+      await refetch();
     } catch (err) {
+      console.error('Delete error:', err);
       alert(err.message || 'Failed to delete session');
+    }
+  };
+
+  // Toggle player attendance
+  const toggleAttendance = async (playerId, currentStatus) => {
+    if (!selectedSession) return;
+    
+    try {
+      await updateStatistic(playerId, {
+        nets_attended: !currentStatus
+      });
+      await refetchStats();
+    } catch (err) {
+      console.error('Attendance error:', err);
+      alert(err.message || 'Failed to update attendance');
     }
   };
 
@@ -429,63 +449,122 @@ const SessionLogger = () => {
 
         {/* Selected Session Details */}
         {selectedSession && (
-          <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold mb-4">
-              Session Details - {new Date(selectedSession.session_date).toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-              })}
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold text-gray-700 mb-2">Session Information</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Date:</span>
-                    <span className="font-medium">{selectedSession.session_date}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Amount Due:</span>
-                    <span className="font-medium text-green-700">₹{(selectedSession.amount_due || 0).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Notes:</span>
-                    <span className="font-medium">{selectedSession.session_name || 'No notes'}</span>
-                  </div>
-                </div>
+          <div className="mt-6 space-y-6">
+            {/* Session Info Card */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold">
+                  Session Details - {new Date(selectedSession.session_date).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                </h3>
+                <button
+                  onClick={() => setShowAttendance(!showAttendance)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                >
+                  <Users size={18} />
+                  {showAttendance ? 'Hide' : 'Manage'} Attendance
+                </button>
               </div>
               
-              <div>
-                <h4 className="font-semibold text-gray-700 mb-2">Session Statistics</h4>
-                <div className="space-y-2 text-sm">
-                  {(() => {
-                    const stats = getSessionStats(selectedSession.id);
-                    return (
-                      <>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Players Attended:</span>
-                          <span className="font-medium">{stats.attended}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Total Dismissals:</span>
-                          <span className="font-medium">{stats.totalDismissals}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Total Wickets:</span>
-                          <span className="font-medium">{stats.totalWickets}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Total Extras:</span>
-                          <span className="font-medium">{stats.totalExtras}</span>
-                        </div>
-                      </>
-                    );
-                  })()}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-2">Session Information</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Date:</span>
+                      <span className="font-medium">{selectedSession.session_date}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Amount Due:</span>
+                      <span className="font-medium text-green-700">₹{(selectedSession.amount_due || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Notes:</span>
+                      <span className="font-medium">{selectedSession.session_name || 'No notes'}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-2">Session Statistics</h4>
+                  <div className="space-y-2 text-sm">
+                    {(() => {
+                      const stats = getSessionStats(selectedSession.id);
+                      return (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Players Attended:</span>
+                            <span className="font-medium">{stats.attended}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Total Dismissals:</span>
+                            <span className="font-medium">{stats.totalDismissals}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Total Wickets:</span>
+                            <span className="font-medium">{stats.totalWickets}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Total Extras:</span>
+                            <span className="font-medium">{stats.totalExtras}</span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Player Attendance Card */}
+            {showAttendance && (
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h4 className="text-lg font-bold mb-4">Player Attendance</h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  Click on a player to mark them as present or absent for this session
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
+                  {players.map(player => {
+                    const playerStat = sessionStats.find(s => s.player_id === player.id);
+                    const isPresent = playerStat?.nets_attended || false;
+                    
+                    return (
+                      <button
+                        key={player.id}
+                        onClick={() => toggleAttendance(player.id, isPresent)}
+                        className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          isPresent
+                            ? 'border-green-500 bg-green-50 hover:bg-green-100'
+                            : 'border-gray-200 bg-white hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-gray-900">{player.name}</span>
+                          {isPresent ? (
+                            <CheckCircle className="text-green-600" size={20} />
+                          ) : (
+                            <Circle className="text-gray-400" size={20} />
+                          )}
+                        </div>
+                        <div className="mt-1 text-xs text-gray-500">
+                          {isPresent ? 'Present' : 'Absent'}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {players.length === 0 && (
+                  <p className="text-center text-gray-500 py-8">
+                    No players found. Add players first to mark attendance.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
