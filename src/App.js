@@ -3,6 +3,7 @@ import { Search, TrendingUp, Award, Users, Calendar, UserPlus, Download, Setting
 import * as XLSX from 'xlsx';
 import AdminPanel from './components/AdminPanel';
 import SessionLogger from './components/SessionLogger';
+import PerformanceImprovement from './components/PerformanceImprovement';
 import { usePlayers, useSkillsRatings, useNetsSessions, useNetsStatistics } from './hooks';
 
 const TrainingTracker = () => {
@@ -267,6 +268,13 @@ const TrainingTracker = () => {
                 <Award size={20} />
               </button>
               <button
+                onClick={() => setView('performance')}
+                className={`px-4 py-2 rounded-lg ${view === 'performance' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                title="Performance Improvement"
+              >
+                <TrendingUp size={20} />
+              </button>
+              <button
                 onClick={() => setView('sessions')}
                 className={`px-4 py-2 rounded-lg ${view === 'sessions' ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
                 title="Session Logger"
@@ -444,6 +452,11 @@ const TrainingTracker = () => {
         {/* Session Logger View */}
         {view === 'sessions' && (
           <SessionLogger />
+        )}
+
+        {/* Performance Improvement View */}
+        {view === 'performance' && (
+          <PerformanceImprovement />
         )}
 
         {/* Player List View */}
