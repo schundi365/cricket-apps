@@ -46,7 +46,7 @@ export function useNetsSessions() {
         return await supabase
           .from('nets_sessions')
           .select('*')
-          .order('date', { ascending: false });
+          .order('session_date', { ascending: false });
       });
 
       if (fetchError) {
@@ -95,9 +95,9 @@ export function useNetsSessions() {
       // Add optimistic session to UI
       const optimisticSession = {
         id: tempId,
-        date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
+        session_date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
         amount_due: amount_due || 0,
-        notes: notes || '',
+        session_name: notes || '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
@@ -111,9 +111,9 @@ export function useNetsSessions() {
         return await supabase
           .from('nets_sessions')
           .insert({
-            date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
+            session_date: typeof date === 'string' ? date : date.toISOString().split('T')[0],
             amount_due: amount_due || 0,
-            notes: notes || ''
+            session_name: notes || ''
           })
           .select()
           .single();

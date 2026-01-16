@@ -88,9 +88,9 @@ const SessionLogger = () => {
   const startEdit = (session) => {
     setEditingSession(session);
     setFormData({
-      date: session.date,
+      date: session.session_date,
       amount_due: session.amount_due || '',
-      notes: session.notes || ''
+      notes: session.session_name || ''
     });
     setShowAddSession(false);
   };
@@ -112,13 +112,13 @@ const SessionLogger = () => {
     const exportData = sessions.map(session => {
       const stats = getSessionStats(session.id);
       return {
-        'Date': session.date,
+        'Date': session.session_date,
         'Amount Due': session.amount_due || 0,
         'Players Attended': stats.attended,
         'Total Dismissals': stats.totalDismissals,
         'Total Wickets': stats.totalWickets,
         'Total Extras': stats.totalExtras,
-        'Notes': session.notes || ''
+        'Notes': session.session_name || ''
       };
     });
 
@@ -141,7 +141,7 @@ const SessionLogger = () => {
 
   // Sort sessions by date (newest first)
   const sortedSessions = useMemo(() => {
-    return [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    return [...sessions].sort((a, b) => new Date(b.session_date) - new Date(a.session_date));
   }, [sessions]);
 
   // Calculate totals
@@ -359,7 +359,7 @@ const SessionLogger = () => {
                           <div className="flex items-center gap-2">
                             <Calendar size={16} className="text-gray-400" />
                             <span className="font-medium text-gray-900">
-                              {new Date(session.date).toLocaleDateString('en-GB', {
+                              {new Date(session.session_date).toLocaleDateString('en-GB', {
                                 day: '2-digit',
                                 month: 'short',
                                 year: 'numeric'
@@ -391,7 +391,7 @@ const SessionLogger = () => {
                         </td>
                         <td className="px-6 py-4">
                           <span className="text-sm text-gray-600 truncate max-w-xs block">
-                            {session.notes || '-'}
+                            {session.session_name || '-'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -431,7 +431,7 @@ const SessionLogger = () => {
         {selectedSession && (
           <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
             <h3 className="text-xl font-bold mb-4">
-              Session Details - {new Date(selectedSession.date).toLocaleDateString('en-GB', {
+              Session Details - {new Date(selectedSession.session_date).toLocaleDateString('en-GB', {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric'
@@ -444,7 +444,7 @@ const SessionLogger = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Date:</span>
-                    <span className="font-medium">{selectedSession.date}</span>
+                    <span className="font-medium">{selectedSession.session_date}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Amount Due:</span>
@@ -452,7 +452,7 @@ const SessionLogger = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Notes:</span>
-                    <span className="font-medium">{selectedSession.notes || 'No notes'}</span>
+                    <span className="font-medium">{selectedSession.session_name || 'No notes'}</span>
                   </div>
                 </div>
               </div>
