@@ -514,8 +514,7 @@ const TrainingTracker = () => {
                       Present in Nets
                     </label>
                     <input
-                      type="number"
-                      min="0"
+                      type="text"
                       value={netsData[selectedPlayer]?.presentInNets || ''}
                       onChange={(e) => updateNetsData(selectedPlayer, 'presentInNets', parseInt(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -527,16 +526,13 @@ const TrainingTracker = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Works on Technique
                     </label>
-                    <select
-                      value={netsData[selectedPlayer]?.worksOnTechnique || 'No'}
+                    <input
+                      type="text"
+                      value={netsData[selectedPlayer]?.worksOnTechnique || ''}
                       onChange={(e) => updateNetsData(selectedPlayer, 'worksOnTechnique', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="No">No</option>
-                      <option value="Sometimes">Sometimes</option>
-                      <option value="Yes">Yes</option>
-                      <option value="Always">Always</option>
-                    </select>
+                      placeholder="Enter notes"
+                    />
                   </div>
                   
                   <div>
@@ -544,8 +540,7 @@ const TrainingTracker = () => {
                       Times Got Out
                     </label>
                     <input
-                      type="number"
-                      min="0"
+                      type="text"
                       value={netsData[selectedPlayer]?.timesGotOut || ''}
                       onChange={(e) => updateNetsData(selectedPlayer, 'timesGotOut', parseInt(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -558,8 +553,7 @@ const TrainingTracker = () => {
                       Wickets Taken
                     </label>
                     <input
-                      type="number"
-                      min="0"
+                      type="text"
                       value={netsData[selectedPlayer]?.wicketsTaken || ''}
                       onChange={(e) => updateNetsData(selectedPlayer, 'wicketsTaken', parseInt(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -572,8 +566,7 @@ const TrainingTracker = () => {
                       Bowling Extras
                     </label>
                     <input
-                      type="number"
-                      min="0"
+                      type="text"
                       value={netsData[selectedPlayer]?.bowlingExtras || ''}
                       onChange={(e) => updateNetsData(selectedPlayer, 'bowlingExtras', parseInt(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
