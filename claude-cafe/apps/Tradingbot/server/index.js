@@ -23,7 +23,19 @@ const server = http.createServer(app);
 const { WebSocketService } = require('./services/websocketService');
 let websocketService;
 
-app.use(cors());
+// CORS configuration for split deployment
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://YOUR_GITHUB_USERNAME.github.io',
+        /\.github\.io$/
+      ]
+    : ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve static files in production
