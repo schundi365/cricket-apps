@@ -248,8 +248,63 @@ const SessionLogger = () => {
       };
     });
 
-    // Create workbook with two sheets
+    // Create player totals data
+    const playerTotalsMap = new Map();
+    
+    sessionStats.forEach(stat => {
+      const player = players.find(p => p.id === stat.player_id);
+      if (player) {
+        if (!playerTotalsMap.has(player.id)) {
+          playerTotalsMap.set(player.id, {
+            name: player.name,
+            totalNetsAttended: 0,
+            totalAmountDue: 0,
+            totalDismissals: 0,
+            totalWickets: 0,
+            totalExtras: 0
+          });
+        }
+        
+        const totals = playerTotalsMap.get(player.id);
+        if (stat.nets_attended) {
+          totals.totalNetsAttended += 1;
+        }
+        totals.totalAmountDue += (stat.amount_due || 0);
+        totals.totalDismissals += (stat.dismissals || 0);
+        totals.totalWickets += (stat.wickets || 0);
+        totals.totalExtras += (stat.extras || 0);
+      }
+    });
+    
+    const playerTotalsData = Array.from(playerTotalsMap.values())
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(totals => ({
+        'Player Name': totals.name,
+        'Total Nets Attended': totals.totalNetsAttended,
+        'Total Amount Due (£)': totals.totalAmountDue.toFixed(2),
+        'Total Dismissals': totals.totalDismissals,
+        'Total Wickets': totals.totalWickets,
+        'Total Extras': totals.totalExtras,
+        'Average Amount per Session (£)': totals.totalNetsAttended > 0 
+          ? (totals.totalAmountDue / totals.totalNetsAttended).toFixed(2) 
+          : '0.00'
+      }));
+
+    // Create workbook with three sheets
     const workbook = XLSX.utils.book_new();
+    
+    // Add player totals sheet (first sheet)
+    const totalsSheet = XLSX.utils.json_to_sheet(playerTotalsData);
+    totalsSheet['!cols'] = [
+      { wch: 20 },  // Player Name
+      { wch: 20 },  // Total Nets Attended
+      { wch: 18 },  // Total Amount Due
+      { wch: 15 },  // Total Dismissals
+      { wch: 12 },  // Total Wickets
+      { wch: 12 },  // Total Extras
+      { wch: 25 }   // Average Amount per Session
+    ];
+    XLSX.utils.book_append_sheet(workbook, totalsSheet, 'Player Totals');
     
     // Add player details sheet
     const playerSheet = XLSX.utils.json_to_sheet(playerExportData);
