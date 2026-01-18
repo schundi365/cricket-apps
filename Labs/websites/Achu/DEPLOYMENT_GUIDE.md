@@ -77,6 +77,17 @@ firebase deploy --only hosting
 
 ### Using the Automated Script
 
+#### For Windows (PowerShell):
+```powershell
+.\deploy.ps1 "Your custom commit message"
+```
+
+Or with default commit message:
+```powershell
+.\deploy.ps1
+```
+
+#### For Linux/Mac (Bash):
 Make the script executable (if not already):
 ```bash
 chmod +x deploy.sh
@@ -258,6 +269,40 @@ Use browser dev tools to test responsive design:
 
 ## 🚀 Quick Reference Commands
 
+### PowerShell (Windows):
+```powershell
+# Login to Firebase
+firebase login
+
+# Deploy to Firebase
+firebase deploy
+
+# Deploy only hosting
+firebase deploy --only hosting
+
+# Test locally
+firebase serve
+
+# Git add and commit
+git add .; git commit -m "Update: changes"
+
+# Git push
+git push
+
+# View Firebase projects
+firebase projects:list
+
+# Check current project
+firebase use
+
+# View deployment history
+firebase hosting:channel:list
+
+# Quick deploy with script
+.\deploy.ps1 "Your update message"
+```
+
+### Bash (Linux/Mac):
 ```bash
 # Login to Firebase
 firebase login
@@ -285,6 +330,9 @@ firebase use
 
 # View deployment history
 firebase hosting:channel:list
+
+# Quick deploy with script
+./deploy.sh "Your update message"
 ```
 
 ## 📞 Getting Help
