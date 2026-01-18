@@ -1,0 +1,24 @@
+{
+  "name": "alliance-soft-tech-website",
+  "version": "1.0.0",
+  "description": "Enterprise fintech website for Alliance Soft Tech",
+  "main": "public/index.html",
+  "scripts": {
+    "serve": "firebase serve",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting"
+  },
+  "keywords": [
+    "fintech",
+    "banking",
+    "payments",
+    "lending",
+    "api",
+    "alliance-soft-tech"
+  ],
+  "author": "Alliance Soft Tech",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  }
+}

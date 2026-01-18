@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alliance Soft Tech | Enterprise Fintech Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #0A2463;
+            --color-secondary: #3E92CC;
+            --color-accent: #D8315B;
+            --color-light: #F8F9FA;
+            --color-dark: #1A1A2E;
+            --color-success: #06D6A0;
+            --color-gradient-start: #0A2463;
+            --color-gradient-end: #3E92CC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            color: var(--color-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: var(--color-light);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.2rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(10, 36, 99, 0.3);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--color-dark);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: var(--color-secondary);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-secondary);
+            transition: width 0.3s;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(10, 36, 99, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(10, 36, 99, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(62, 146, 204, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(216, 49, 91, 0.2) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--color-primary);
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 1rem 2.5rem;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .hero-visual {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            animation: fadeIn 1s ease-out 0.6s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: var(--color-secondary);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.8rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .services-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-end));
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-secondary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 20px rgba(10, 36, 99, 0.2);
+        }
+
+        .service-card h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card ul {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .service-card li {
+            padding: 0.5rem 0;
+            color: #555;
+            position: relative;
+            padding-left: 1.8rem;
+        }
+
+        .service-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--color-success);
+            font-weight: bold;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .features-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 2rem;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--color-accent), #ff6b9d);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(216, 49, 91, 0.3);
+        }
+
+        .feature-content h4 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-content p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Trust Section */
+        .trust {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .trust-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .trust-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .trust-stat {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+
+        .trust-stat:hover {
+            transform: scale(1.05);
+        }
+
+        .trust-stat h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .trust-stat p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 50%, rgba(62, 146, 204, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(216, 49, 91, 0.2) 0%, transparent 50%);
+        }
+
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-container h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-container p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+        }
+
+        .cta-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-form input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .cta-form button {
+            background: var(--color-accent);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .cta-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 49, 91, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--color-dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-about h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-about p {
+            opacity: 0.8;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--color-secondary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .services-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .services-container {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-form {
+                flex-direction: column;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">AST</div>
+                <span>Alliance Soft Tech</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="#services">Solutions</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact" class="cta-button">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Transform Your Business Into a Fintech Powerhouse</h1>
+                <p>Alliance Soft Tech delivers enterprise-grade API infrastructure for banking, payments, and lending. Empower your business with cutting-edge financial technology solutions.</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn-primary">Schedule a Demo</a>
+                    <a href="#services" class="btn-secondary">Explore Solutions</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="stat-card">
+                    <h3>500+</h3>
+                    <p>Enterprise Clients</p>
+                </div>
+                <div class="stat-card">
+                    <h3>30+</h3>
+                    <p>Global Markets</p>
+                </div>
+                <div class="stat-card">
+                    <h3>99.9%</h3>
+                    <p>System Uptime</p>
+                </div>
+                <div class="stat-card">
+                    <h3>50M+</h3>
+                    <p>End Users Served</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="section-header">
+            <span class="section-tag">Our Solutions</span>
+            <h2>Comprehensive Fintech Infrastructure</h2>
+            <p>From payments to lending and banking, our platform provides the technology foundation for your financial services</p>
+        </div>
+        <div class="services-container">
+            <div class="service-card">
+                <div class="service-icon">💳</div>
+                <h3>Payment Solutions</h3>
+                <p>Complete payment infrastructure connecting finance, technology, and commerce seamlessly.</p>
+                <ul>
+                    <li>Prepaid & Debit Cards</li>
+                    <li>UPI Integration</li>
+                    <li>Cross-Border Payments</li>
+                    <li>Merchant Acquiring</li>
+                    <li>Payment Gateway</li>
+                    <li>Digital Wallets</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">💰</div>
+                <h3>Lending Platform</h3>
+                <p>Next-generation lending solutions with workflow automation and innovative products.</p>
+                <ul>
+                    <li>Credit Card Processing</li>
+                    <li>Buy Now Pay Later (BNPL)</li>
+                    <li>Loan Origination System</li>
+                    <li>Loan Management System</li>
+                    <li>Microfinance Solutions</li>
+                    <li>Debt Collections</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">🏦</div>
+                <h3>Core Banking</h3>
+                <p>Fully integrated banking stack with future-ready KYC and comprehensive banking operations.</p>
+                <ul>
+                    <li>Core Banking Platform</li>
+                    <li>Neobanking Solutions</li>
+                    <li>Customer Onboarding</li>
+                    <li>Account Management</li>
+                    <li>KYC Suite (e-KYC/Video)</li>
+                    <li>Regulatory Compliance</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="features-container">
+            <div class="section-header">
+                <span class="section-tag">Why Choose Us</span>
+                <h2>Built for Scale, Security & Innovation</h2>
+                <p>Our platform combines cutting-edge technology with industry expertise to deliver exceptional results</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🚀</div>
+                    <div class="feature-content">
+                        <h4>Rapid Time-to-Market</h4>
+                        <p>Launch financial products 5X faster with our comprehensive cloud-agnostic product suite and pre-integrated solutions.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-content">
+                        <h4>Enterprise-Grade Security</h4>
+                        <p>Certified, compliant, and secure infrastructure. Experience unparalleled security and agility for your operations.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-content">
+                        <h4>Microservices Architecture</h4>
+                        <p>Highly configurable platform with secure AI/ML capabilities to craft personalized financial products and experiences.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🌐</div>
+                    <div class="feature-content">
+                        <h4>Global Reach</h4>
+                        <p>Operating across 30+ markets with support for banks, NBFCs, and fintech companies worldwide.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-content">
+                        <h4>API-First Infrastructure</h4>
+                        <p>Seamless integration with custom APIs designed for flexibility, scalability, and ease of implementation.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-content">
+                        <h4>Advanced Analytics</h4>
+                        <p>Data-driven insights, reconciliation services, and comprehensive reporting to optimize your operations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section id="about" class="trust">
+        <div class="trust-container">
+            <div class="section-header">
+                <span class="section-tag">Our Impact</span>
+                <h2>Trusted by Industry Leaders</h2>
+                <p>Powering innovation for banks, fintechs, and businesses across the globe</p>
+            </div>
+            <div class="trust-stats">
+                <div class="trust-stat">
+                    <h3>300+</h3>
+                    <p>Banks & Financial Institutions</p>
+                </div>
+                <div class="trust-stat">
+                    <h3>800+</h3>
+                    <p>Fintech Partnerships</p>
+                </div>
+                <div class="trust-stat">
+                    <h3>200+</h3>
+                    <p>Lending Partners</p>
+                </div>
+                <div class="trust-stat">
+                    <h3>50M+</h3>
+                    <p>End Users Empowered</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="cta-section">
+        <div class="cta-container">
+            <h2>Ready to Transform Your Business?</h2>
+            <p>Join the leading financial institutions that trust Alliance Soft Tech for their fintech infrastructure. Get started today.</p>
+            <form class="cta-form">
+                <input type="email" placeholder="Enter your business email" required>
+                <button type="submit">Get Started</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-about">
+                <h3>Alliance Soft Tech</h3>
+                <p>We help every company become a fintech. Our API infrastructure delivers futuristic and customer-centric financial technology solutions through cutting-edge innovation.</p>
+                <p>Empowering digital financial services across payments, lending, and banking.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Solutions</h4>
+                <ul>
+                    <li><a href="#services">Payment Solutions</a></li>
+                    <li><a href="#services">Lending Platform</a></li>
+                    <li><a href="#services">Core Banking</a></li>
+                    <li><a href="#services">API Services</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Partners</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Case Studies</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Alliance Soft Tech. All rights reserved. | Privacy Policy | Terms of Service</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 2px 30px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.05)';
+            }
+        });
+
+        // Form submission
+        document.querySelector('.cta-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for your interest! Our team will contact you shortly.');
+            e.target.reset();
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.service-card, .feature-item, .trust-stat').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
