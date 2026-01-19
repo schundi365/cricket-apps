@@ -103,7 +103,18 @@ download_dataset() {
     cd data
     
     print_status "Downloading MovieLens 100K dataset..."
-    wget -q https://files.grouplens.org/datasets/movielens/ml-100k.zip
+    
+    # Try wget first, fall back to curl if not available
+    if command -v wget &> /dev/null; then
+        wget -q https://files.grouplens.org/datasets/movielens/ml-100k.zip
+    elif command -v curl &> /dev/null; then
+        curl -sL https://files.grouplens.org/datasets/movielens/ml-100k.zip -o ml-100k.zip
+    else
+        print_error "Neither wget nor curl found. Please download manually from:"
+        print_error "https://files.grouplens.org/datasets/movielens/ml-100k.zip"
+        exit 1
+    fi
+    
     unzip -q ml-100k.zip
     rm ml-100k.zip
     

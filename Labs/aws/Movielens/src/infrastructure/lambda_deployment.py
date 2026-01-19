@@ -13,6 +13,7 @@ import os
 import zipfile
 import tempfile
 import shutil
+import time
 from typing import Optional
 from botocore.exceptions import ClientError
 
@@ -75,7 +76,7 @@ class LambdaDeployment:
                         arcname = os.path.relpath(file_path, temp_dir)
                         zipf.write(file_path, arcname)
             
-            print(f"✓ Packaged Lambda function: {output_zip}")
+            print(f"[OK] Packaged Lambda function: {output_zip}")
             return output_zip
             
         finally:
@@ -123,6 +124,14 @@ class LambdaDeployment:
                     ZipFile=zip_content
                 )
                 
+                # Wait for the code update to complete before updating configuration
+                print(f"  Waiting for code update to complete...")
+                waiter = self.lambda_client.get_waiter('function_updated')
+                waiter.wait(
+                    FunctionName=function_name,
+                    WaiterConfig={'Delay': 2, 'MaxAttempts': 30}
+                )
+                
                 # Update configuration
                 config_response = self.lambda_client.update_function_configuration(
                     FunctionName=function_name,
@@ -134,7 +143,14 @@ class LambdaDeployment:
                     Environment={'Variables': environment_variables or {}}
                 )
                 
-                print(f"✓ Updated Lambda function: {function_name}")
+                # Wait for configuration update to complete
+                print(f"  Waiting for configuration update to complete...")
+                waiter.wait(
+                    FunctionName=function_name,
+                    WaiterConfig={'Delay': 2, 'MaxAttempts': 30}
+                )
+                
+                print(f"[OK] Updated Lambda function: {function_name}")
                 return response['FunctionArn']
                 
             except ClientError as e:
@@ -152,13 +168,21 @@ class LambdaDeployment:
                         Description=f'MovieLens recommendation system - {function_name}'
                     )
                     
-                    print(f"✓ Created Lambda function: {function_name}")
+                    # Wait for function to be active
+                    print(f"  Waiting for function creation to complete...")
+                    waiter = self.lambda_client.get_waiter('function_active')
+                    waiter.wait(
+                        FunctionName=function_name,
+                        WaiterConfig={'Delay': 2, 'MaxAttempts': 30}
+                    )
+                    
+                    print(f"[OK] Created Lambda function: {function_name}")
                     return response['FunctionArn']
                 else:
                     raise
                     
         except ClientError as e:
-            print(f"✗ Error deploying Lambda function {function_name}: {e}")
+            print(f"[X] Error deploying Lambda function {function_name}: {e}")
             return None
     
     def deploy_evaluation_lambda(
@@ -187,7 +211,7 @@ class LambdaDeployment:
         zip_file = self.package_lambda_function(
             source_file,
             dependencies,
-            output_zip=f'/tmp/{function_name}.zip'
+            output_zip=os.path.join(tempfile.gettempdir(), f'{function_name}.zip')
         )
         
         # Deploy function
@@ -238,7 +262,7 @@ class LambdaDeployment:
         zip_file = self.package_lambda_function(
             source_file,
             dependencies,
-            output_zip=f'/tmp/{function_name}.zip'
+            output_zip=os.path.join(tempfile.gettempdir(), f'{function_name}.zip')
         )
         
         # Deploy function
@@ -308,7 +332,7 @@ class LambdaDeployment:
         if monitor_arn:
             functions['monitoring'] = monitor_arn
         
-        print(f"\n✓ Successfully deployed {len(functions)} Lambda functions")
+        print(f"\n[OK] Successfully deployed {len(functions)} Lambda functions")
         return functions
 
 

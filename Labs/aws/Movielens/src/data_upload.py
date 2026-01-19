@@ -129,10 +129,10 @@ def verify_files(directory: Path, expected_files: list) -> bool:
         file_path = directory / file_name
         if not file_path.exists():
             missing_files.append(file_name)
-            print(f"  ✗ Missing: {file_name}")
+            print(f"  [X] Missing: {file_name}")
         else:
             file_size = file_path.stat().st_size
-            print(f"  ✓ Found: {file_name} ({file_size:,} bytes)")
+            print(f"  [OK] Found: {file_name} ({file_size:,} bytes)")
     
     if missing_files:
         print(f"\nError: Missing files: {', '.join(missing_files)}")
@@ -173,7 +173,7 @@ def upload_to_s3(local_dir: Path, bucket_name: str, s3_prefix: str, files: list)
     for file_name in files:
         local_path = local_dir / file_name
         if not local_path.exists():
-            print(f"  ⚠ Skipping {file_name} (not found)")
+            print(f"  [!] Skipping {file_name} (not found)")
             continue
         
         s3_key = f"{s3_prefix}{file_name}"
@@ -197,13 +197,13 @@ def upload_to_s3(local_dir: Path, bucket_name: str, s3_prefix: str, files: list)
             local_size = local_path.stat().st_size
             
             if s3_size == local_size:
-                print(f"  ✓ Uploaded: s3://{bucket_name}/{s3_key} ({s3_size:,} bytes)")
+                print(f"  [OK] Uploaded: s3://{bucket_name}/{s3_key} ({s3_size:,} bytes)")
                 uploaded_files.append(file_name)
             else:
-                print(f"  ✗ Size mismatch for {file_name}: local={local_size}, s3={s3_size}")
+                print(f"  [X] Size mismatch for {file_name}: local={local_size}, s3={s3_size}")
         
         except ClientError as e:
-            print(f"  ✗ Failed to upload {file_name}: {e}")
+            print(f"  [X] Failed to upload {file_name}: {e}")
             raise
     
     print(f"\nSuccessfully uploaded {len(uploaded_files)} files to S3")
@@ -320,14 +320,14 @@ Examples:
             shutil.rmtree(temp_dir)
             print("Cleanup complete")
         
-        print("\n✓ Data upload completed successfully!")
+        print("\n[OK] Data upload completed successfully!")
         print(f"Files are available at: s3://{args.bucket}/{args.prefix}")
     
     except KeyboardInterrupt:
         print("\n\nOperation cancelled by user")
         sys.exit(1)
     except Exception as e:
-        print(f"\n✗ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         sys.exit(1)
 
 

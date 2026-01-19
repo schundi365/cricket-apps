@@ -24,7 +24,8 @@ from eventbridge_deployment import EventBridgeDeployment
 def deploy_infrastructure(
     bucket_name: str,
     region: str = 'us-east-1',
-    kms_key_id: str = None
+    kms_key_id: str = None,
+    skip_eventbridge: bool = False
 ):
     """
     Deploy complete infrastructure for MovieLens recommendation system
@@ -33,6 +34,7 @@ def deploy_infrastructure(
         bucket_name: Name for the S3 bucket
         region: AWS region
         kms_key_id: Optional KMS key ID for encryption
+        skip_eventbridge: Skip EventBridge deployment if True
     """
     print("\n" + "="*70)
     print("MovieLens Recommendation System - Infrastructure Deployment")
@@ -98,27 +100,39 @@ def deploy_infrastructure(
         return False
     
     # Step 5: Deploy EventBridge scheduled retraining
-    print("\n[5/5] Deploying EventBridge scheduled retraining...")
-    eventbridge_deployment = EventBridgeDeployment(region)
-    eventbridge_success = eventbridge_deployment.deploy_complete_schedule(
-        rule_name='MovieLensWeeklyRetraining',
-        state_machine_arn=state_machine_arn
-    )
-    
-    if not eventbridge_success:
-        print("\n✗ Failed to deploy EventBridge schedule")
-        return False
+    if skip_eventbridge:
+        print("\n[5/5] Skipping EventBridge deployment (--skip-eventbridge flag)")
+        eventbridge_success = True
+    else:
+        print("\n[5/5] Deploying EventBridge scheduled retraining...")
+        eventbridge_deployment = EventBridgeDeployment(region)
+        eventbridge_success = eventbridge_deployment.deploy_complete_schedule(
+            rule_name='MovieLensWeeklyRetraining',
+            state_machine_arn=state_machine_arn
+        )
+        
+        if not eventbridge_success:
+            print("\n[!] Warning: Failed to deploy EventBridge schedule")
+            print("    You may need EventBridge permissions. You can:")
+            print("    1. Add events:PutRule permission to your IAM user")
+            print("    2. Manually trigger the pipeline via Step Functions console")
+            print("    Continuing without automated scheduling...")
     
     # Deployment summary
     print("\n" + "="*70)
     print("Deployment Summary")
     print("="*70)
-    print(f"\n✓ S3 Bucket: {bucket_name}")
-    print(f"✓ SageMaker Role: {sagemaker_role_arn}")
-    print(f"✓ Lambda Evaluation: {evaluation_lambda_arn}")
-    print(f"✓ Lambda Monitoring: {monitoring_lambda_arn}")
-    print(f"✓ Step Functions: {state_machine_arn}")
-    print(f"✓ EventBridge Rule: MovieLensWeeklyRetraining")
+    print(f"\n[OK] S3 Bucket: {bucket_name}")
+    print(f"[OK] SageMaker Role: {sagemaker_role_arn}")
+    print(f"[OK] Lambda Evaluation: {evaluation_lambda_arn}")
+    print(f"[OK] Lambda Monitoring: {monitoring_lambda_arn}")
+    print(f"[OK] Step Functions: {state_machine_arn}")
+    if eventbridge_success and not skip_eventbridge:
+        print(f"[OK] EventBridge Rule: MovieLensWeeklyRetraining")
+    elif skip_eventbridge:
+        print(f"[SKIP] EventBridge Rule: Skipped")
+    else:
+        print(f"[!] EventBridge Rule: Failed (manual trigger required)")
     
     print("\n" + "="*70)
     print("Infrastructure Deployment Complete!")
@@ -162,19 +176,25 @@ Examples:
         '--kms-key-id',
         help='Optional KMS key ID for S3 encryption'
     )
+    parser.add_argument(
+        '--skip-eventbridge',
+        action='store_true',
+        help='Skip EventBridge deployment (useful if you lack events:PutRule permission)'
+    )
     
     args = parser.parse_args()
     
     # Validate bucket name
     if not args.bucket_name or len(args.bucket_name) < 3:
-        print("✗ Error: Bucket name must be at least 3 characters")
+        print("[X] Error: Bucket name must be at least 3 characters")
         sys.exit(1)
     
     # Deploy infrastructure
     success = deploy_infrastructure(
         bucket_name=args.bucket_name,
         region=args.region,
-        kms_key_id=args.kms_key_id
+        kms_key_id=args.kms_key_id,
+        skip_eventbridge=args.skip_eventbridge
     )
     
     sys.exit(0 if success else 1)

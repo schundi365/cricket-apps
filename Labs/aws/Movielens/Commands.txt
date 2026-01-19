@@ -20,3 +20,53 @@ Get-Content tests/unit/test_inference.py | Measure-Object -Line
 Number of widgets: 5
 Widget titles: ['Invocations per Minute', 'Model Latency (P50, P90
 , P99)', 'Error Rates (4xx and 5xx)', 'CPU Utilization', 'Memory Utilization'] "
+
+python src\infrastructure\deploy_all.py --bucket-name movielens-ml-327030626634 --region us-east-1
+
+# python src\infrastructure\deploy_all.py --bucket-name movielens-ml-327030626634 --region us-east-1 --skip-eventbridge
+
+
+python src\data_upload.py --dataset 100k --bucket movielens-ml-327030626634 --prefix raw-data/
+
+Start ML Pipeline (via AWS Console):
+
+Go to Step Functions console
+Find "MovieLensMLPipeline"
+Click "Start execution"
+
+
+run this verification script to see exactly what's deployed and what steps remain:
+aws stepfunctions start-execution --state-machine-arn <arn:aws:states:us-east-1:327030626634:stateMachine:MovieLensMLPipeline>
+
+python start_pipeline.py --region us-east-1
+python monitor_pipeline.py --latest --follow
+
+HOW TO MONITOR PROGRESS
+======================================================================
+
+Option 1: AWS Console (Recommended)
+  1. Go to: https://console.aws.amazon.com/states/home?region=us-east-1#/statemachines
+  2. Click 'MovieLensMLPipeline'
+  3. Click on the running execution
+  4. Watch the visual workflow progress
+
+Option 2: CLI
+  aws stepfunctions describe-execution --execution-arn arn:aws:states:us-east-1:327030626634:execution:MovieLensMLPipeline:execution-20260116-191247
+
+Option 3: Python Script
+  python monitor_pipeline.py --execution-arn arn:aws:states:us-east-1:327030626634:execution:MovieLensMLPipeline:execution-20260116-191247
+
+======================================================================
+AFTER COMPLETION
+======================================================================
+
+Once the pipeline completes successfully:
+  - Model will be deployed to SageMaker endpoint
+  - CloudWatch dashboard will show metrics
+  - Model Monitor will start tracking drift
+  - You can make predictions via the endpoint
+
+Verify completion:
+  python verify_deployment.py --bucket-name <bucket> --region us-east-1
+
+======================================================================

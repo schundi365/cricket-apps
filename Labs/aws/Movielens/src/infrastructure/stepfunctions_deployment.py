@@ -315,7 +315,7 @@ class StepFunctionsDeployment:
             definition: State machine definition
             
         Returns:
-            State machine ARN if successful
+            State machine ARN if successful, None otherwise
         """
         try:
             # Check if state machine exists
@@ -324,30 +324,40 @@ class StepFunctionsDeployment:
                     stateMachineArn=f"arn:aws:states:{self.region}:{self.account_id}:stateMachine:{state_machine_name}"
                 )
                 # State machine exists, update it
-                response = self.sfn_client.update_state_machine(
+                update_response = self.sfn_client.update_state_machine(
                     stateMachineArn=response['stateMachineArn'],
                     definition=json.dumps(definition),
                     roleArn=role_arn
                 )
-                print(f"✓ Updated state machine: {state_machine_name}")
+                print(f"[OK] Updated state machine: {state_machine_name}")
+                # Return the ARN from describe response, not update response
                 return response['stateMachineArn']
                 
             except ClientError as e:
                 if e.response['Error']['Code'] == 'StateMachineDoesNotExist':
                     # State machine doesn't exist, create it
-                    response = self.sfn_client.create_state_machine(
+                    create_response = self.sfn_client.create_state_machine(
                         name=state_machine_name,
                         definition=json.dumps(definition),
                         roleArn=role_arn,
                         type='STANDARD'
                     )
-                    print(f"✓ Created state machine: {state_machine_name}")
-                    return response['stateMachineArn']
+                    print(f"[OK] Created state machine: {state_machine_name}")
+                    return create_response['stateMachineArn']
                 else:
+                    print(f"[X] Error checking state machine: {e}")
                     raise
                     
         except ClientError as e:
-            print(f"✗ Error deploying state machine: {e}")
+            print(f"[X] Error deploying state machine: {e}")
+            print(f"    Error Code: {e.response['Error']['Code']}")
+            print(f"    Error Message: {e.response['Error']['Message']}")
+            return None
+        except Exception as e:
+            print(f"[X] Unexpected error deploying state machine: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
             return None
     
     def deploy_ml_pipeline(

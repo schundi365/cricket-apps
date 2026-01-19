@@ -133,7 +133,7 @@ class S3BucketSetup:
             lifecycle_policy = {
                 'Rules': [
                     {
-                        'Id': 'ArchiveOldData',
+                        'ID': 'ArchiveOldData',
                         'Status': 'Enabled',
                         'Filter': {'Prefix': ''},
                         'Transitions': [

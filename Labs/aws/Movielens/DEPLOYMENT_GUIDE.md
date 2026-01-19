@@ -13,6 +13,7 @@ This guide will walk you through deploying the MovieLens recommendation system t
 - [ ] AWS CLI installed and configured
 - [ ] IAM user with Administrator access (or specific permissions)
 - [ ] AWS credentials configured locally
+- [ ] **EventBridge permissions** (for automated retraining) - See Phase 0 below
 
 ### 2. Local Environment
 - [ ] Python 3.10+ installed
@@ -27,6 +28,21 @@ This guide will walk you through deploying the MovieLens recommendation system t
 - S3 storage: ~$5-10/month
 - Lambda/Step Functions: ~$5-10/month
 - CloudWatch: ~$10-20/month
+
+---
+
+## Phase 0: EventBridge Permissions Setup (5 minutes) - OPTIONAL
+
+**Purpose:** Enable automated weekly retraining every Sunday at 2 AM UTC.
+
+**Quick Setup:**
+```powershell
+python src\infrastructure\add_eventbridge_permissions.py --auto
+```
+
+**If you skip this:** Add `--skip-eventbridge` to all deployment commands.
+
+**Detailed instructions:** See [EVENTBRIDGE_SETUP.md](EVENTBRIDGE_SETUP.md)
 
 ---
 
