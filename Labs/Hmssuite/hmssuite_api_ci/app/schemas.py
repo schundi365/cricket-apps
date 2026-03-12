@@ -41,6 +41,39 @@ class MedicationAlert(BaseModel):
     implication: str
 
 
+class RadiologyReport(BaseModel):
+    modality: str | None = None
+    body_part: str | None = None
+    impression_text: str
+    findings_text: str | None = None
+    source: str | None = None
+
+
+class RadiologyAlert(BaseModel):
+    severity: str
+    issue: str
+    implication: str
+    evidence: str
+
+
+class ExtractedClaim(BaseModel):
+    claim_id: str
+    source: str
+    category: str
+    entity: str
+    polarity: str = "present"
+    confidence: float = 0.5
+    claim_text: str
+
+
+class ClaimReconciliation(BaseModel):
+    claim_id: str
+    status: str
+    reason: str
+    matched_evidence: list[str] = Field(default_factory=list)
+    recommended_followup: str | None = None
+
+
 class DiagnoseOptions(BaseModel):
     include_recommendations: bool = True
     include_normal_labs: bool = False
@@ -54,6 +87,9 @@ class DiagnoseLabsRequest(BaseModel):
     labs: list[LabResult] = Field(min_length=1)
     medications: list[MedicationItem] = Field(default_factory=list)
     known_drug_allergies: list[str] = Field(default_factory=list)
+    radiology_reports: list[RadiologyReport] = Field(default_factory=list)
+    patient_llm_questions: list[str] = Field(default_factory=list)
+    external_llm_output_text: str | None = None
     options: DiagnoseOptions = DiagnoseOptions()
 
 
@@ -85,6 +121,12 @@ class DiagnoseLabsResponse(BaseModel):
     key_findings: list[KeyFinding]
     recommendations: list[str]
     medication_alerts: list[MedicationAlert] = Field(default_factory=list)
+    radiology_alerts: list[RadiologyAlert] = Field(default_factory=list)
+    doctor_question_flags: list[str] = Field(default_factory=list)
+    extracted_claims: list[ExtractedClaim] = Field(default_factory=list)
+    claim_reconciliation: list[ClaimReconciliation] = Field(default_factory=list)
+    llm_extractor_used: bool = False
+    llm_extractor_provider: str | None = None
     normalized_input: NormalizedInput
     natural_language_summary: str
     highlight_points: list[str]
@@ -107,3 +149,23 @@ class PatientCatalogItem(BaseModel):
 class ProcessPatientResponse(BaseModel):
     patient: PatientCatalogItem
     analysis: DiagnoseLabsResponse
+
+
+class DoctorMismatchItem(BaseModel):
+    claim_id: str
+    status: str
+    source: str
+    category: str
+    entity: str
+    claim_text: str
+    reason: str
+    matched_evidence: list[str] = Field(default_factory=list)
+    recommended_followup: str | None = None
+
+
+class DoctorMismatchResponse(BaseModel):
+    request_id: str
+    analysis_id: str
+    urgency: str
+    mismatch_count: int
+    items: list[DoctorMismatchItem] = Field(default_factory=list)

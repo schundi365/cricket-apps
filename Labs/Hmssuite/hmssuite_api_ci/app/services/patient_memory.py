@@ -85,6 +85,59 @@ def write_patient_memory(
         lines.append("- No medication safety alerts identified.")
     lines.append("")
 
+    lines.append("## Radiology Narrative Alerts")
+    lines.append("")
+    if analysis.radiology_alerts:
+        for alert in analysis.radiology_alerts:
+            lines.append(f"- [{alert.severity.upper()}] {alert.issue}")
+            lines.append(f"  - Evidence: {alert.evidence}")
+            lines.append(f"  - Implication: {alert.implication}")
+    else:
+        lines.append("- No radiology narrative alerts identified.")
+    lines.append("")
+
+    lines.append("## Doctor Question Flags (From Patient/LLM Questions)")
+    lines.append("")
+    if analysis.doctor_question_flags:
+        for item in analysis.doctor_question_flags:
+            lines.append(f"- {item}")
+    else:
+        lines.append("- No external AI-origin concern flags captured.")
+    lines.append("")
+
+    lines.append("## Extracted Claims")
+    lines.append("")
+    if analysis.extracted_claims:
+        for claim in analysis.extracted_claims:
+            lines.append(
+                "- [{source}] {category}/{entity} ({polarity}, conf={conf}) :: {text}".format(
+                    source=claim.source,
+                    category=claim.category,
+                    entity=claim.entity,
+                    polarity=claim.polarity,
+                    conf=round(claim.confidence, 2),
+                    text=claim.claim_text,
+                )
+            )
+    else:
+        lines.append("- No claims extracted from external narrative.")
+    lines.append("")
+
+    lines.append("## Claim Reconciliation Against HMS")
+    lines.append("")
+    if analysis.claim_reconciliation:
+        for item in analysis.claim_reconciliation:
+            lines.append(f"- Claim {item.claim_id}: {item.status}")
+            lines.append(f"  - Reason: {item.reason}")
+            if item.matched_evidence:
+                for ev in item.matched_evidence:
+                    lines.append(f"  - Evidence: {ev}")
+            if item.recommended_followup:
+                lines.append(f"  - Follow-up: {item.recommended_followup}")
+    else:
+        lines.append("- No reconciliation output available.")
+    lines.append("")
+
     lines.append("## Known Drug Allergies")
     lines.append("")
     if known_drug_allergies:

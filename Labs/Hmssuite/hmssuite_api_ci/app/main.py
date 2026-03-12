@@ -5,6 +5,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from app.schemas import (
+    DoctorMismatchItem,
+    DoctorMismatchResponse,
     DiagnoseLabsRequest,
     DiagnoseLabsResponse,
     Encounter,
@@ -48,6 +50,43 @@ def hf_samples(limit: int = Query(default=3, ge=1, le=10)) -> dict:
 @app.post("/api/v1/diagnose/labs", response_model=DiagnoseLabsResponse)
 def diagnose_labs(payload: DiagnoseLabsRequest) -> DiagnoseLabsResponse:
     return analyze_labs(payload)
+
+
+@app.post("/api/v1/diagnose/mismatches", response_model=DoctorMismatchResponse)
+def diagnose_mismatches(payload: DiagnoseLabsRequest) -> DoctorMismatchResponse:
+    analysis = analyze_labs(payload)
+    claim_index = {claim.claim_id: claim for claim in analysis.extracted_claims}
+
+    items: list[DoctorMismatchItem] = []
+    for rec in analysis.claim_reconciliation:
+        if rec.status not in {"contradiction", "missing_in_hms"}:
+            continue
+
+        claim = claim_index.get(rec.claim_id)
+        if claim is None:
+            continue
+
+        items.append(
+            DoctorMismatchItem(
+                claim_id=rec.claim_id,
+                status=rec.status,
+                source=claim.source,
+                category=claim.category,
+                entity=claim.entity,
+                claim_text=claim.claim_text,
+                reason=rec.reason,
+                matched_evidence=rec.matched_evidence,
+                recommended_followup=rec.recommended_followup,
+            )
+        )
+
+    return DoctorMismatchResponse(
+        request_id=analysis.request_id,
+        analysis_id=analysis.analysis_id,
+        urgency=analysis.summary.urgency,
+        mismatch_count=len(items),
+        items=items,
+    )
 
 
 @app.get("/api/v1/patients")
