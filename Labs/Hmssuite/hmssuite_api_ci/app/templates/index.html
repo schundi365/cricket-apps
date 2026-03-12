@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HMS Suite Lab API Test Form</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --panel: #ffffff;
+      --ink: #13233a;
+      --muted: #5f7187;
+      --accent: #0b6fa4;
+      --accent-2: #14a38b;
+      --border: #d7e0ea;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, #dff2ff 0%, transparent 35%),
+        radial-gradient(circle at 90% 20%, #d8fff5 0%, transparent 30%),
+        var(--bg);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 12px 24px rgba(15, 39, 73, 0.08);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    p { color: var(--muted); }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn-sample { background: var(--accent); }
+    .btn-submit { background: var(--accent-2); }
+    .btn-patient { background: #0e8c61; }
+
+    select {
+      min-width: 300px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 10px;
+      font-size: 14px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 280px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 13px;
+      resize: vertical;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0b1b2f;
+      color: #dbf0ff;
+      padding: 12px;
+      min-height: 160px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card">
+      <h1>HMS Suite Realtime Lab API Test Form</h1>
+      <p>Load sample payload from Hugging Face and run diagnostic suggestions.</p>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <button class="btn-patient" id="loadPatients">Load Patients From HMS SQL</button>
+        <select id="patientSelect">
+          <option value="">Select a patient...</option>
+        </select>
+        <button class="btn-patient" id="processPatient">Process Selected Patient</button>
+      </div>
+      <div class="controls">
+        <button class="btn-sample" id="loadSample">Load Hugging Face Sample</button>
+        <button class="btn-submit" id="runAnalysis">Run Analysis</button>
+      </div>
+      <textarea id="payload" spellcheck="false"></textarea>
+    </section>
+
+    <section class="card">
+      <h3>API Response</h3>
+      <pre id="result">Run a sample to view output...</pre>
+    </section>
+  </div>
+
+  <script>
+    const payloadEl = document.getElementById("payload");
+    const resultEl = document.getElementById("result");
+    const patientSelect = document.getElementById("patientSelect");
+
+    function patientLabel(p) {
+      const name = p.name || "Unknown";
+      const sex = p.sex || "U";
+      const meds = Number.isFinite(p.medication_count) ? p.medication_count : 0;
+      return `${p.patient_id} | ${name} | ${sex} | meds:${meds}`;
+    }
+
+    async function loadPatients() {
+      resultEl.textContent = "Loading patients from /api/v1/patients...";
+      try {
+        const resp = await fetch("/api/v1/patients?limit=50");
+        const data = await resp.json();
+        patientSelect.innerHTML = '<option value="">Select a patient...</option>';
+
+        if (!Array.isArray(data.items) || data.items.length === 0) {
+          resultEl.textContent = JSON.stringify(data, null, 2);
+          return;
+        }
+
+        for (const item of data.items) {
+          const opt = document.createElement("option");
+          opt.value = item.patient_id;
+          opt.textContent = patientLabel(item);
+          patientSelect.appendChild(opt);
+        }
+        resultEl.textContent = `Loaded ${data.items.length} patients.`;
+      } catch (err) {
+        resultEl.textContent = `Failed to load patients: ${err}`;
+      }
+    }
+
+    async function processPatient() {
+      const patientId = patientSelect.value;
+      if (!patientId) {
+        resultEl.textContent = "Select a patient before processing.";
+        return;
+      }
+      resultEl.textContent = `Processing patient ${patientId}...`;
+      try {
+        const resp = await fetch(`/api/v1/patients/${encodeURIComponent(patientId)}/process`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await resp.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultEl.textContent = `Patient processing failed: ${err}`;
+      }
+    }
+
+    async function loadSample() {
+      resultEl.textContent = "Loading sample from /api/v1/samples/hf...";
+      try {
+        const resp = await fetch("/api/v1/samples/hf?limit=1");
+        const data = await resp.json();
+        payloadEl.value = JSON.stringify(data.items[0], null, 2);
+        resultEl.textContent = "Sample loaded. Click Run Analysis.";
+      } catch (err) {
+        resultEl.textContent = `Failed to load sample: ${err}`;
+      }
+    }
+
+    async function runAnalysis() {
+      resultEl.textContent = "Sending request...";
+      try {
+        const payload = JSON.parse(payloadEl.value);
+        const resp = await fetch("/api/v1/diagnose/labs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await resp.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultEl.textContent = `Request failed: ${err}`;
+      }
+    }
+
+    document.getElementById("loadSample").addEventListener("click", loadSample);
+    document.getElementById("runAnalysis").addEventListener("click", runAnalysis);
+    document.getElementById("loadPatients").addEventListener("click", loadPatients);
+    document.getElementById("processPatient").addEventListener("click", processPatient);
+  </script>
+</body>
+</html>
