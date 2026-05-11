@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MK Air CC - Opposition Analysis & Winning Strategies</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .slide {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 500px;
+        }
+        
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .title-slide h1 {
+            color: white;
+            font-size: 3em;
+        }
+        
+        h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #34495e;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            margin: 15px 0;
+            color: #2980b9;
+        }
+        
+        h4 {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #34495e;
+        }
+        
+        .opposition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .team-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .strong-team {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .medium-team {
+            background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+        }
+        
+        .weak-team {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        
+        .strategy-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .batting-strategy {
+            background: #e8f5e8;
+            border-left-color: #27ae60;
+        }
+        
+        .bowling-strategy {
+            background: #fff5f5;
+            border-left-color: #e74c3c;
+        }
+        
+        .fielding-strategy {
+            background: #f0f8ff;
+            border-left-color: #3498db;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .threat-level {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .high-threat {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .medium-threat {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .low-threat {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .tactical-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .tactic-card {
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+        }
+        
+        .powerplay-tactic {
+            background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+        }
+        
+        .middle-tactic {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+        }
+        
+        .death-tactic {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        }
+        
+        .key-players {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .player-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #7f8c8d;
+        }
+        
+        .title-slide .subtitle {
+            color: #ecf0f1;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .highlight {
+            background: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .success-rate {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .match-plan {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <h1>🏏 MK Air CC</h1>
+            <h1>Opposition Analysis & Winning Strategies</h1>
+            <p class="subtitle">Comprehensive Battle Plans for Division Success</p>
+            <p class="subtitle">Data-Driven Tactical Approaches</p>
+        </div>
+
+        <!-- Division Overview -->
+        <div class="slide">
+            <h2>📊 Division 5 Opposition Analysis</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Total Opponents</h4>
+                    <div class="success-rate">11 Teams</div>
+                </div>
+                <div class="stat-card">
+                    <h4>High Threat</h4>
+                    <div class="success-rate">3 Teams</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Medium Threat</h4>
+                    <div class="success-rate">5 Teams</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Low Threat</h4>
+                    <div class="success-rate">3 Teams</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="divisionChart"></canvas>
+            </div>
+            
+            <div class="strategy-section">
+                <h3>🎯 Overall Division Strategy</h3>
+                <ul>
+                    <li><strong>Target Win Rate:</strong> 75%+ (9+ wins from 11 opponents)</li>
+                    <li><strong>Key Matches:</strong> Must-win against bottom 6 teams</li>
+                    <li><strong>Bonus Points:</strong> Focus on batting/bowling bonus points</li>
+                    <li><strong>Home Advantage:</strong> Maximize home ground performance</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- High Threat Teams -->
+        <div class="slide">
+            <h2>🚨 High Threat Teams - Detailed Analysis</h2>
+            
+            <div class="opposition-grid">
+                <div class="team-card strong-team">
+                    <h3>🥇 Rushden & Higham Town CC (2nd XI)</h3>
+                    <div class="threat-level high-threat">HIGH THREAT</div>
+                    
+                    <h4>Team Profile:</h4>
+                    <ul>
+                        <li><strong>Strength:</strong> Experienced club with strong 2nd XI</li>
+                        <li><strong>Batting:</strong> Solid top order, good partnerships</li>
+                        <li><strong>Bowling:</strong> Disciplined attack, good death bowling</li>
+                        <li><strong>Fielding:</strong> Athletic, few dropped catches</li>
+                    </ul>
+                    
+                    <div class="key-players">
+                        <span class="player-tag">Experienced openers</span>
+                        <span class="player-tag">All-rounder captain</span>
+                        <span class="player-tag">Pace spearhead</span>
+                    </div>
+                </div>
+                
+                <div class="team-card strong-team">
+                    <h3>🥈 Cogenhoe CC (1st XI)</h3>
+                    <div class="threat-level high-threat">HIGH THREAT</div>
+                    
+                    <h4>Team Profile:</h4>
+                    <ul>
+                        <li><strong>Strength:</strong> Well-organized village club</li>
+                        <li><strong>Batting:</strong> Consistent middle order</li>
+                        <li><strong>Bowling:</strong> Spin-heavy attack</li>
+                        <li><strong>Fielding:</strong> Good ground fielding</li>
+                    </ul>
+                    
+                    <div class="key-players">
+                        <span class="player-tag">Spin twins</span>
+                        <span class="player-tag">Anchor batsman</span>
+                        <span class="player-tag">Wicket-keeper</span>
+                    </div>
+                </div>
+                
+                <div class="team-card strong-team">
+                    <h3>🥉 Wellingborough Town CC (2nd XI)</h3>
+                    <div class="threat-level high-threat">HIGH THREAT</div>
+                    
+                    <h4>Team Profile:</h4>
+                    <ul>
+                        <li><strong>Strength:</strong> Town club with depth</li>
+                        <li><strong>Batting:</strong> Aggressive approach</li>
+                        <li><strong>Bowling:</strong> Pace and bounce</li>
+                        <li><strong>Fielding:</strong> Sharp close catchers</li>
+                    </ul>
+                    
+                    <div class="key-players">
+                        <span class="player-tag">Power hitter</span>
+                        <span class="player-tag">Fast bowler</span>
+                        <span class="player-tag">Slip fielder</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Winning Strategies vs High Threat -->
+        <div class="slide">
+            <h2>⚔️ Winning Strategies vs High Threat Teams</h2>
+            
+            <div class="tactical-grid">
+                <div class="tactic-card powerplay-tactic">
+                    <h4>Powerplay Strategy</h4>
+                    <ul>
+                        <li>Conservative approach: 45+ runs</li>
+                        <li>Preserve wickets vs new ball</li>
+                        <li>Target loose deliveries only</li>
+                        <li>Build solid platform</li>
+                    </ul>
+                </div>
+                
+                <div class="tactic-card middle-tactic">
+                    <h4>Middle Overs</h4>
+                    <ul>
+                        <li>Accelerate gradually: 7+ RPO</li>
+                        <li>Target part-time bowlers</li>
+                        <li>Build partnerships 40+ runs</li>
+                        <li>Rotate strike consistently</li>
+                    </ul>
+                </div>
+                
+                <div class="tactic-card death-tactic">
+                    <h4>Death Overs</h4>
+                    <ul>
+                        <li>Sai Pilla to finish: 10+ RPO</li>
+                        <li>Target straight boundaries</li>
+                        <li>Minimize dot balls</li>
+                        <li>Smart running between wickets</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="strategy-section batting-strategy">
+                <h3>🏏 Batting Strategy vs Strong Teams</h3>
+                <div class="match-plan">
+Team1 Batting Order vs High Threat:
+1. Sumeet Sharma - Solid start, see off new ball
+2. Ashwin Tigdoli - Anchor role, build partnerships  
+3. Chris Timms - Experience vs pressure
+4. Vinodh Kumar - Key batsman, accelerate from over 15
+5. Prasanna Chandran - Rotate strike, support Vinodh
+6. Sai Pilla - Finisher, target 12+ RPO in death overs
+
+Target: 180+ runs, partnerships of 50+ in middle order
+                </div>
+            </div>
+            
+            <div class="strategy-section bowling-strategy">
+                <h3>🎳 Bowling Strategy vs Strong Teams</h3>
+                <div class="match-plan">
+Bowling Plan vs High Threat:
+Overs 1-6: Purus Paran + Vinodh Kumar
+- Line and length, build pressure
+- Target: 2+ wickets, economy under 6 RPO
+
+Overs 7-15: Eashaan Nune + part-timers  
+- Spin to control run rate
+- Target: 1+ wicket, economy under 6.5 RPO
+
+Overs 16-20: Purus Paran + Sai Pilla
+- Yorkers and variations
+- Target: Restrict to under 10 RPO
+                </div>
+            </div>
+        </div>
+
+        <!-- Medium Threat Teams -->
+        <div class="slide">
+            <h2>⚠️ Medium Threat Teams - Tactical Approach</h2>
+            
+            <div class="opposition-grid">
+                <div class="team-card medium-team">
+                    <h3>Willoughby CC (1st XI)</h3>
+                    <div class="threat-level medium-threat">MEDIUM THREAT</div>
+                    <p><strong>Strategy:</strong> Aggressive batting, target 200+ runs. Use pace bowling to exploit their weakness against bounce.</p>
+                </div>
+                
+                <div class="team-card medium-team">
+                    <h3>North Crawley CC (1st XI)</h3>
+                    <div class="threat-level medium-threat">MEDIUM THREAT</div>
+                    <p><strong>Strategy:</strong> Spin-heavy approach, target their middle order. Build big partnerships to put pressure.</p>
+                </div>
+                
+                <div class="team-card medium-team">
+                    <h3>Bugbrooke CC (1st XI)</h3>
+                    <div class="threat-level medium-threat">MEDIUM THREAT</div>
+                    <p><strong>Strategy:</strong> Exploit their fielding lapses. Target boundaries in powerplay and death overs.</p>
+                </div>
+                
+                <div class="team-card medium-team">
+                    <h3>Raunds Town CC (1st XI)</h3>
+                    <div class="threat-level medium-threat">MEDIUM THREAT</div>
+                    <p><strong>Strategy:</strong> Pace and bounce strategy. Use short balls and yorkers to unsettle their batting.</p>
+                </div>
+                
+                <div class="team-card medium-team">
+                    <h3>Long Buckby CC (1st XI)</h3>
+                    <div class="threat-level medium-threat">MEDIUM THREAT</div>
+                    <p><strong>Strategy:</strong> All-round pressure. Consistent line and length bowling, rotate bowlers frequently.</p>
+                </div>
+            </div>
+            
+            <div class="strategy-section">
+                <h3>🎯 Medium Threat Strategy Summary</h3>
+                <ul>
+                    <li><strong>Batting Approach:</strong> Positive intent from ball one, target 190+ runs</li>
+                    <li><strong>Bowling Plan:</strong> Attack with main bowlers, use variations</li>
+                    <li><strong>Fielding Setup:</strong> Aggressive fields, close catchers</li>
+                    <li><strong>Win Probability:</strong> 80%+ with proper execution</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Low Threat Teams -->
+        <div class="slide">
+            <h2>✅ Low Threat Teams - Domination Strategy</h2>
+            
+            <div class="opposition-grid">
+                <div class="team-card weak-team">
+                    <h3>Stony Stratford CC (3rd XI)</h3>
+                    <div class="threat-level low-threat">LOW THREAT</div>
+                    <p><strong>Strategy:</strong> Total domination. Experiment with batting order, give opportunities to fringe players.</p>
+                </div>
+                
+                <div class="team-card weak-team">
+                    <h3>Mears Ashby CC (1st XI)</h3>
+                    <div class="threat-level low-threat">LOW THREAT</div>
+                    <p><strong>Strategy:</strong> Batting practice match. Target 250+ runs, work on strike rates and partnerships.</p>
+                </div>
+                
+                <div class="team-card weak-team">
+                    <h3>Sharnbrook & Bromham CC (1st XI)</h3>
+                    <div class="threat-level low-threat">LOW THREAT</div>
+                    <p><strong>Strategy:</strong> Bowling practice. Try different combinations, work on death bowling skills.</p>
+                </div>
+            </div>
+            
+            <div class="strategy-section">
+                <h3>🚀 Low Threat Domination Plan</h3>
+                <div class="match-plan">
+Batting Strategy vs Weak Teams:
+- Aggressive from over 1
+- Target 250+ runs in 40 overs
+- Practice innovative shots
+- Build massive partnerships (100+ runs)
+- Give batting practice to lower order
+
+Bowling Strategy vs Weak Teams:  
+- Rotate all bowlers
+- Practice variations and new deliveries
+- Work on field placements
+- Target bowling them out under 35 overs
+- Focus on taking 10 wickets
+                </div>
+            </div>
+        </div>
+
+        <!-- Match-by-Match Battle Plans -->
+        <div class="slide">
+            <h2>📋 Detailed Match Plans</h2>
+            
+            <div class="strategy-section">
+                <h3>🏏 Team1 Specific Plans</h3>
+                
+                <h4>vs Rushden & Higham Town CC (Toughest Match)</h4>
+                <div class="match-plan">
+Pre-Match Preparation:
+- Extra net sessions focusing on facing quality bowling
+- Video analysis of their key bowlers
+- Practice partnerships under pressure
+- Mental preparation for tough contest
+
+Match Day Strategy:
+- Win toss, choose to bat first
+- Target 190+ runs with disciplined batting
+- Use Vinodh Kumar as anchor, Sai Pilla as finisher
+- Bowl tight lines, build pressure through dots
+- Aggressive fielding, no easy singles
+
+Key Success Factors:
+- Partnerships of 40+ runs in middle order
+- Death bowling execution by Purus Paran
+- Sharp catching, especially in slips
+- Captain's tactical awareness crucial
+                </div>
+                
+                <h4>vs Cogenhoe CC (Spin Challenge)</h4>
+                <div class="match-plan">
+Anti-Spin Strategy:
+- Practice sweep shots and reverse sweep
+- Use feet to get to pitch of ball
+- Target straight boundaries against spin
+- Rotate strike consistently
+- Patience in building innings
+
+Bowling Plan:
+- Use pace to counter their spin strength
+- Short balls to unsettle batsmen
+- Yorkers in death overs
+- Field placements: deep mid-wicket, long-on
+                </div>
+            </div>
+            
+            <div class="strategy-section">
+                <h3>🏏 Team2 Specific Plans</h3>
+                
+                <h4>Focus on Winnable Matches</h4>
+                <div class="match-plan">
+Team2 Target Matches (Must Win):
+1. Stony Stratford CC (3rd XI) - 95% win probability
+2. Mears Ashby CC - 90% win probability  
+3. Sharnbrook & Bromham CC - 85% win probability
+4. Weaker medium threat teams - 70% win probability
+
+Strategy for Team2:
+- Conservative but positive batting
+- Target 160+ runs consistently
+- Disciplined bowling, economy under 7 RPO
+- Sharp fielding, minimize extras
+- Build confidence through early wins
+                </div>
+            </div>
+        </div>
+
+        <!-- Seasonal Strategy -->
+        <div class="slide">
+            <h2>📅 Season-Long Strategic Approach</h2>
+            
+            <div class="chart-container">
+                <canvas id="seasonChart"></canvas>
+            </div>
+            
+            <div class="tactical-grid">
+                <div class="tactic-card powerplay-tactic">
+                    <h4>Early Season (Matches 1-4)</h4>
+                    <ul>
+                        <li>Build team confidence</li>
+                        <li>Target easier opponents first</li>
+                        <li>Establish batting/bowling combinations</li>
+                        <li>Work on team chemistry</li>
+                    </ul>
+                </div>
+                
+                <div class="tactic-card middle-tactic">
+                    <h4>Mid Season (Matches 5-8)</h4>
+                    <ul>
+                        <li>Face tougher opponents</li>
+                        <li>Test strategies under pressure</li>
+                        <li>Fine-tune team balance</li>
+                        <li>Build momentum for title push</li>
+                    </ul>
+                </div>
+                
+                <div class="tactic-card death-tactic">
+                    <h4>Late Season (Matches 9-11)</h4>
+                    <ul>
+                        <li>Championship deciders</li>
+                        <li>Peak performance required</li>
+                        <li>Mental toughness crucial</li>
+                        <li>Execute proven strategies</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="strategy-section">
+                <h3>🏆 Championship Winning Formula</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Team1 Target</h4>
+                        <div class="success-rate">9+ Wins</div>
+                        <p>From 11 matches</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Team2 Target</h4>
+                        <div class="success-rate">7+ Wins</div>
+                        <p>From 11 matches</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Bonus Points</h4>
+                        <div class="success-rate">15+</div>
+                        <p>Batting + Bowling</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Net Run Rate</h4>
+                        <div class="success-rate">+1.5</div>
+                        <p>Positive throughout</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Success Factors -->
+        <div class="slide">
+            <h2>🎯 Key Success Factors</h2>
+            
+            <div class="strategy-section batting-strategy">
+                <h3>🏏 Batting Success Keys</h3>
+                <ul>
+                    <li><strong>Partnerships:</strong> Build 2+ partnerships of 40+ runs per match</li>
+                    <li><strong>Strike Rotation:</strong> Minimize dot balls, especially in middle overs</li>
+                    <li><strong>Power Hitting:</strong> Sai Pilla to average 12+ RPO in death overs</li>
+                    <li><strong>Adaptability:</strong> Adjust to different bowling attacks and conditions</li>
+                    <li><strong>Mental Toughness:</strong> Perform under pressure in key matches</li>
+                </ul>
+            </div>
+            
+            <div class="strategy-section bowling-strategy">
+                <h3>🎳 Bowling Success Keys</h3>
+                <ul>
+                    <li><strong>New Ball:</strong> Take 2+ wickets in first 10 overs consistently</li>
+                    <li><strong>Death Bowling:</strong> Restrict opponents to under 10 RPO in final 5 overs</li>
+                    <li><strong>Spin Control:</strong> Use Eashaan Nune to control middle overs</li>
+                    <li><strong>Variations:</strong> Develop 3+ different deliveries per bowler</li>
+                    <li><strong>Pressure Building:</strong> Bowl maiden overs to create pressure</li>
+                </ul>
+            </div>
+            
+            <div class="strategy-section fielding-strategy">
+                <h3>🥅 Fielding Success Keys</h3>
+                <ul>
+                    <li><strong>Catching:</strong> 90%+ success rate, especially in slips and close positions</li>
+                    <li><strong>Run Outs:</strong> Target 1+ run out per match through sharp fielding</li>
+                    <li><strong>Boundary Saving:</strong> Save 15+ runs per match through athletic fielding</li>
+                    <li><strong>Communication:</strong> Clear calling and backing up</li>
+                    <li><strong>Pressure Fielding:</strong> Create pressure through tight fielding</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="slide title-slide">
+            <h1>🏆 Championship Blueprint</h1>
+            <div class="subtitle">
+                <p>✅ Detailed opposition analysis complete</p>
+                <p>✅ Match-specific strategies developed</p>
+                <p>✅ Season-long approach planned</p>
+                <p>✅ Success factors identified</p>
+            </div>
+            <h2 style="color: white; border: none; margin-top: 40px;">Ready to Dominate Division 5! 🏏</h2>
+        </div>
+    </div>
+
+    <script>
+        // Division Overview Chart
+        const ctx1 = document.getElementById('divisionChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['High Threat Teams', 'Medium Threat Teams', 'Low Threat Teams'],
+                datasets: [{
+                    data: [3, 5, 3],
+                    backgroundColor: ['#e74c3c', '#f39c12', '#27ae60']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Season Strategy Chart
+        const ctx2 = document.getElementById('seasonChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Match 1', 'Match 2', 'Match 3', 'Match 4', 'Match 5', 'Match 6', 'Match 7', 'Match 8', 'Match 9', 'Match 10', 'Match 11'],
+                datasets: [{
+                    label: 'Team1 Win Probability',
+                    data: [85, 90, 75, 80, 70, 65, 85, 75, 60, 80, 85],
+                    borderColor: '#00b894',
+                    backgroundColor: 'rgba(0, 184, 148, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Team2 Win Probability',
+                    data: [75, 80, 60, 65, 55, 50, 70, 60, 45, 65, 70],
+                    borderColor: '#e17055',
+                    backgroundColor: 'rgba(225, 112, 85, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 40,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Win Probability (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Match Number'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

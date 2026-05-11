@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MK Air CC Team 2 - Winning Strategy Guide 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #11998e;
+        }
+        
+        .section h2 {
+            color: #11998e;
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-bottom: 3px solid #38ef7d;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #0d7a6f;
+            margin: 25px 0 15px 0;
+            font-size: 1.5em;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #11998e;
+        }
+        
+        .action-card h4 {
+            color: #11998e;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        .priority-high {
+            border-left-color: #dc3545;
+        }
+        
+        .priority-medium {
+            border-left-color: #ffc107;
+        }
+        
+        .priority-low {
+            border-left-color: #28a745;
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .badge-high {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .badge-medium {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .badge-low {
+            background: #28a745;
+            color: white;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #e8f5e9;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .checklist li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .player-role-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .player-role-card h4 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .player-role-card .role {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .training-schedule {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .week-plan {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .day-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #11998e;
+        }
+        
+        .day-card h5 {
+            color: #11998e;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .danger-box {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .metric-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #11998e;
+        }
+        
+        .metric-card .label {
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 MK Air CC Team 2</h1>
+            <p>Winning Strategy Guide - 2026 Season</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Actionable Plans for Players & Club</p>
+        </div>
+
+
+        <!-- Critical Success Factors -->
+        <div class="section">
+            <h2>🎯 Critical Success Factors for 2026</h2>
+            
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="number">10+</div>
+                    <div class="label">Wins Required<br>(Out of 18 matches)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="number">170+</div>
+                    <div class="label">Target Team Average<br>(Currently 146)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="number">8/9</div>
+                    <div class="label">Home Wins Target<br>(Obelisk Ground)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="number">Top 3</div>
+                    <div class="label">League Position Goal<br>(Division 2)</div>
+                </div>
+            </div>
+            
+            <div class="highlight-box danger-box">
+                <h3>⚠️ Must-Win Matches</h3>
+                <ul>
+                    <li><strong>Match 1 (May 2):</strong> MK Warriors (Away) - Set positive momentum</li>
+                    <li><strong>Match 10 (July 4):</strong> MK Superkings (Home) - Revenge match</li>
+                    <li><strong>Match 11 (July 11):</strong> MK Warriors (Home) - Secure double</li>
+                    <li><strong>All 9 Home Matches:</strong> Defend Obelisk Cricket Ground</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Player-Specific Action Plans -->
+        <div class="section">
+            <h2>👥 Player-Specific Action Plans</h2>
+            
+            <div class="player-role-card">
+                <h4>Sunit Sar - All-Rounder & Key Player</h4>
+                <div class="role">2025: 194 runs, 18 wickets | Role: Match-Winner</div>
+                <ul class="checklist">
+                    <li>Target: 300+ runs and 25+ wickets in 2026</li>
+                    <li>Focus on converting 40s into 60+ scores</li>
+                    <li>Maintain bowling economy under 4.5</li>
+                    <li>Lead by example in pressure situations</li>
+                    <li>Mentor younger players during matches</li>
+                </ul>
+            </div>
+            
+            <div class="player-role-card">
+                <h4>Mohammed Zubair - Senior Batsman</h4>
+                <div class="role">2025: 192 runs | Role: Anchor & Experience</div>
+                <ul class="checklist">
+                    <li>Target: 350+ runs with average 35+</li>
+                    <li>Improve strike rate from 47.88 to 55+</li>
+                    <li>Build partnerships with top order</li>
+                    <li>Guide team through difficult phases</li>
+                    <li>Share knowledge of opposition tactics</li>
+                </ul>
+            </div>
+            
+            <div class="player-role-card">
+                <h4>Raghav Pyaraka - Captain & All-Rounder</h4>
+                <div class="role">2025: 144 runs, 5 wickets | Role: Leadership</div>
+                <ul class="checklist">
+                    <li>Target: 250+ runs and 15+ wickets</li>
+                    <li>Make tactical decisions based on match situations</li>
+                    <li>Rotate bowlers effectively to maximize wickets</li>
+                    <li>Build team morale and confidence</li>
+                    <li>Develop winning strategies for each opponent</li>
+                </ul>
+            </div>
+
+            
+            <div class="player-role-card">
+                <h4>Saravana S - Lead Bowler</h4>
+                <div class="role">2025: 20 wickets, 4.49 economy | Role: Strike Bowler</div>
+                <ul class="checklist">
+                    <li>Target: 30+ wickets with economy under 4.5</li>
+                    <li>Develop variations for different conditions</li>
+                    <li>Bowl in powerplay and death overs</li>
+                    <li>Study opposition batsmen weaknesses</li>
+                    <li>Maintain fitness for consistent performance</li>
+                </ul>
+            </div>
+            
+            <div class="player-role-card">
+                <h4>Deepak Joshi - Impact Batsman</h4>
+                <div class="role">2025: 130 runs, Highest 57 | Role: Aggressor</div>
+                <ul class="checklist">
+                    <li>Target: 250+ runs with 2-3 match-winning innings</li>
+                    <li>Convert 50s into 70+ scores</li>
+                    <li>Maintain strike rate above 70</li>
+                    <li>Accelerate in middle overs</li>
+                    <li>Build confidence through net practice</li>
+                </ul>
+            </div>
+            
+            <div class="player-role-card">
+                <h4>Shashi Kiran - Wicketkeeper-Batsman</h4>
+                <div class="role">2025: 121 runs, Highest 65 | Role: Keeper & Finisher</div>
+                <ul class="checklist">
+                    <li>Target: 200+ runs with consistent 30+ scores</li>
+                    <li>Zero missed stumpings and catches</li>
+                    <li>Provide tactical inputs from behind stumps</li>
+                    <li>Finish innings with quick runs</li>
+                    <li>Maintain concentration for full 40 overs</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Club-Level Actions -->
+        <div class="section">
+            <h2>🏏 Club-Level Action Plan</h2>
+            
+            <div class="action-card priority-high">
+                <span class="priority-badge badge-high">HIGH PRIORITY</span>
+                <h4>1. Pre-Season Training Program (April 2026)</h4>
+                <p><strong>Timeline:</strong> 4 weeks before season start</p>
+                <ul>
+                    <li>Week 1-2: Fitness and conditioning (running, strength training)</li>
+                    <li>Week 3: Technical skills (batting, bowling, fielding drills)</li>
+                    <li>Week 4: Match simulations and team strategy sessions</li>
+                    <li>Minimum 2 net sessions per week</li>
+                    <li>Organize intra-squad practice matches</li>
+                </ul>
+            </div>
+
+            
+            <div class="action-card priority-high">
+                <span class="priority-badge badge-high">HIGH PRIORITY</span>
+                <h4>2. Batting Improvement Program</h4>
+                <p><strong>Goal:</strong> Increase team average from 146 to 170+</p>
+                <ul>
+                    <li>Focus on top-order partnerships (target 50+ run stands)</li>
+                    <li>Middle-order batting practice against quality bowling</li>
+                    <li>Situational batting drills (chasing, defending, accelerating)</li>
+                    <li>Video analysis of successful innings from 2025</li>
+                    <li>Individual batting plans for each player</li>
+                    <li>Practice against different bowling styles</li>
+                </ul>
+            </div>
+            
+            <div class="action-card priority-high">
+                <span class="priority-badge badge-high">HIGH PRIORITY</span>
+                <h4>3. Bowling Strategy & Economy</h4>
+                <p><strong>Goal:</strong> Reduce opposition scores and improve economy rates</p>
+                <ul>
+                    <li>Develop specific bowling plans for each opposition</li>
+                    <li>Practice death bowling (overs 35-40)</li>
+                    <li>Reduce extras (wides and no-balls) through discipline</li>
+                    <li>Field placement strategies for each bowler</li>
+                    <li>Bowling variations and slower balls practice</li>
+                    <li>Fitness program for bowlers to maintain pace</li>
+                </ul>
+            </div>
+            
+            <div class="action-card priority-medium">
+                <span class="priority-badge badge-medium">MEDIUM PRIORITY</span>
+                <h4>4. Fielding Excellence Program</h4>
+                <p><strong>Goal:</strong> Save 15-20 runs per match through better fielding</p>
+                <ul>
+                    <li>Dedicated 30-minute fielding drills before each practice</li>
+                    <li>Catching practice (high catches, slip catches, boundary catches)</li>
+                    <li>Ground fielding and throwing accuracy drills</li>
+                    <li>Run-out coordination practice</li>
+                    <li>Assign specialist positions based on player strengths</li>
+                    <li>Fitness drills for agility and quick reflexes</li>
+                </ul>
+            </div>
+            
+            <div class="action-card priority-medium">
+                <span class="priority-badge badge-medium">MEDIUM PRIORITY</span>
+                <h4>5. Opposition Analysis & Intelligence</h4>
+                <p><strong>Goal:</strong> Know your opponents before match day</p>
+                <ul>
+                    <li>Create dossiers on known opponents (MK Warriors, MK Superkings)</li>
+                    <li>Scout new opponents in early season matches</li>
+                    <li>Identify key players and their weaknesses</li>
+                    <li>Analyze ground conditions for away matches</li>
+                    <li>Share intelligence with team before each match</li>
+                    <li>Adjust tactics based on opposition strengths</li>
+                </ul>
+            </div>
+
+            
+            <div class="action-card priority-low">
+                <span class="priority-badge badge-low">ONGOING</span>
+                <h4>6. Team Building & Mental Conditioning</h4>
+                <p><strong>Goal:</strong> Build winning mentality and team cohesion</p>
+                <ul>
+                    <li>Organize team social events before season</li>
+                    <li>Mental conditioning sessions for pressure situations</li>
+                    <li>Celebrate small victories and milestones</li>
+                    <li>Senior players mentor younger teammates</li>
+                    <li>Post-match analysis sessions (wins and losses)</li>
+                    <li>Build confidence through positive reinforcement</li>
+                </ul>
+            </div>
+            
+            <div class="action-card priority-low">
+                <span class="priority-badge badge-low">ONGOING</span>
+                <h4>7. Equipment & Logistics</h4>
+                <p><strong>Goal:</strong> Ensure team is match-ready at all times</p>
+                <ul>
+                    <li>Check and maintain all cricket equipment</li>
+                    <li>Ensure adequate stock of balls, bats, pads, gloves</li>
+                    <li>First aid kit and medical supplies</li>
+                    <li>Transportation arrangements for away matches</li>
+                    <li>Team kit and uniform distribution</li>
+                    <li>Ground booking confirmations for home matches</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Weekly Training Schedule -->
+        <div class="section">
+            <h2>📅 Recommended Weekly Training Schedule</h2>
+            
+            <div class="training-schedule">
+                <h3>Pre-Season (April 2026)</h3>
+                <div class="week-plan">
+                    <div class="day-card">
+                        <h5>Monday</h5>
+                        <p>Fitness & Conditioning</p>
+                        <ul>
+                            <li>Running (5km)</li>
+                            <li>Strength training</li>
+                            <li>Flexibility exercises</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h5>Wednesday</h5>
+                        <p>Net Practice Session 1</p>
+                        <ul>
+                            <li>Batting drills (2 hours)</li>
+                            <li>Bowling practice</li>
+                            <li>Fielding drills</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h5>Friday</h5>
+                        <p>Net Practice Session 2</p>
+                        <ul>
+                            <li>Match simulations</li>
+                            <li>Situational practice</li>
+                            <li>Team strategy</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h5>Sunday</h5>
+                        <p>Practice Match</p>
+                        <ul>
+                            <li>Intra-squad game</li>
+                            <li>Test combinations</li>
+                            <li>Video analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="training-schedule">
+                <h3>During Season (May-September 2026)</h3>
+                <div class="week-plan">
+                    <div class="day-card">
+                        <h5>Tuesday</h5>
+                        <p>Recovery & Light Practice</p>
+                        <ul>
+                            <li>Light fitness work</li>
+                            <li>Technical corrections</li>
+                            <li>Video review</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h5>Thursday</h5>
+                        <p>Match Preparation</p>
+                        <ul>
+                            <li>Net session</li>
+                            <li>Opposition analysis</li>
+                            <li>Team meeting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h5>Saturday</h5>
+                        <p>Match Day</p>
+                        <ul>
+                            <li>Warm-up routine</li>
+                            <li>Execute game plan</li>
+                            <li>Post-match review</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h5>Sunday</h5>
+                        <p>Rest & Recovery</p>
+                        <ul>
+                            <li>Active recovery</li>
+                            <li>Injury treatment</li>
+                            <li>Mental relaxation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match Day Strategy -->
+        <div class="section">
+            <h2>🎮 Match Day Strategy & Execution</h2>
+            
+            <div class="action-card">
+                <h4>Pre-Match (2 hours before)</h4>
+                <ul class="checklist">
+                    <li>Team arrives at ground 2 hours early</li>
+                    <li>Inspect pitch and ground conditions</li>
+                    <li>Warm-up routine (30 minutes)</li>
+                    <li>Captain and coach finalize playing XI</li>
+                    <li>Brief team on opposition and game plan</li>
+                    <li>Mental preparation and team huddle</li>
+                </ul>
+            </div>
+            
+            <div class="action-card">
+                <h4>Batting Strategy</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phase</th>
+                            <th>Overs</th>
+                            <th>Strategy</th>
+                            <th>Target Run Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Powerplay</strong></td>
+                            <td>1-10</td>
+                            <td>Build foundation, rotate strike, attack loose balls</td>
+                            <td>4.5-5.0 per over</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Middle Overs</strong></td>
+                            <td>11-30</td>
+                            <td>Partnerships, rotate strike, target weak bowlers</td>
+                            <td>4.0-4.5 per over</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Death Overs</strong></td>
+                            <td>31-40</td>
+                            <td>Accelerate, target boundaries, maximize score</td>
+                            <td>6.0+ per over</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            
+            <div class="action-card">
+                <h4>Bowling Strategy</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phase</th>
+                            <th>Overs</th>
+                            <th>Bowlers</th>
+                            <th>Strategy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>New Ball</strong></td>
+                            <td>1-10</td>
+                            <td>Saravana S, Sunit Sar</td>
+                            <td>Attack stumps, take early wickets, tight lines</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Middle Overs</strong></td>
+                            <td>11-30</td>
+                            <td>Harish Shetty, Mohammed Zubair, Raghav Pyaraka</td>
+                            <td>Build pressure, vary pace, restrict runs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Death Overs</strong></td>
+                            <td>31-40</td>
+                            <td>Best bowlers (Saravana S, Sunit Sar)</td>
+                            <td>Yorkers, slower balls, defensive fields</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="action-card">
+                <h4>Fielding Positions & Tactics</h4>
+                <ul class="checklist">
+                    <li><strong>Attacking Fields (1-15 overs):</strong> 3 slips, gully, point, cover, mid-off, mid-on, fine leg</li>
+                    <li><strong>Defensive Fields (16-35 overs):</strong> Spread field, save boundaries, force singles</li>
+                    <li><strong>Death Overs (36-40):</strong> Boundary riders, protect straight boundaries</li>
+                    <li><strong>Key Positions:</strong> Best fielders at point, cover, and mid-wicket</li>
+                    <li><strong>Communication:</strong> Constant talk between fielders and bowlers</li>
+                </ul>
+            </div>
+            
+            <div class="action-card">
+                <h4>Post-Match Review</h4>
+                <ul class="checklist">
+                    <li>Immediate team huddle after match</li>
+                    <li>Discuss what worked and what didn't</li>
+                    <li>Individual player feedback sessions</li>
+                    <li>Video analysis of key moments</li>
+                    <li>Update opposition intelligence database</li>
+                    <li>Plan adjustments for next match</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Key Matches Strategy -->
+        <div class="section">
+            <h2>🔥 Key Matches - Detailed Strategy</h2>
+            
+            <div class="highlight-box danger-box">
+                <h3>Match 1: May 2 vs MK Warriors (Away) - SEASON OPENER</h3>
+                <p><strong>Importance:</strong> Set positive momentum for entire season</p>
+                <p><strong>2025 Result:</strong> Won</p>
+                <h4>Winning Strategy:</h4>
+                <ul>
+                    <li><strong>Batting:</strong> Deploy Deepak Joshi (scored 57 vs Warriors) and Shashi Kiran (65 runs) early</li>
+                    <li><strong>Bowling:</strong> Harish Shetty (5 wickets vs Warriors) to lead attack with new ball</li>
+                    <li><strong>Fielding:</strong> Aggressive field placements to capitalize on their weaknesses</li>
+                    <li><strong>Mental Approach:</strong> Confidence from previous victory, play attacking cricket</li>
+                    <li><strong>Target:</strong> Score 180+ batting first, or chase efficiently if bowling first</li>
+                </ul>
+            </div>
+
+            
+            <div class="highlight-box danger-box">
+                <h3>Match 10: July 4 vs MK Superkings (Home) - REVENGE MATCH</h3>
+                <p><strong>Importance:</strong> Overcome previous defeats, home advantage</p>
+                <p><strong>2025 Result:</strong> Lost</p>
+                <h4>Winning Strategy:</h4>
+                <ul>
+                    <li><strong>Batting:</strong> Raghav Pyaraka (42 runs vs Superkings), Samik Dandy (66 runs) to anchor innings</li>
+                    <li><strong>Bowling:</strong> Rohit Bhola (economical vs Superkings) and Sunit Sar to restrict runs</li>
+                    <li><strong>Mental Preparation:</strong> Focus on present, not past defeats</li>
+                    <li><strong>Home Advantage:</strong> Use familiar conditions at Obelisk Ground</li>
+                    <li><strong>Target:</strong> Score 200+ to put pressure on opposition</li>
+                </ul>
+            </div>
+            
+            <div class="highlight-box success-box">
+                <h3>Home Matches Strategy (9 matches at Obelisk Cricket Ground)</h3>
+                <p><strong>Goal:</strong> Win 8 out of 9 home matches</p>
+                <h4>Home Advantage Tactics:</h4>
+                <ul>
+                    <li><strong>Ground Knowledge:</strong> Understand pitch behavior, boundary dimensions, wind patterns</li>
+                    <li><strong>Batting:</strong> Exploit short boundaries, target specific areas</li>
+                    <li><strong>Bowling:</strong> Use pitch conditions to advantage (pace, spin, bounce)</li>
+                    <li><strong>Fielding:</strong> Know the ground's quirks and use them</li>
+                    <li><strong>Crowd Support:</strong> Encourage supporters to create positive atmosphere</li>
+                    <li><strong>Preparation:</strong> Practice at Obelisk regularly to maintain familiarity</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="section">
+            <h2>📈 Performance Metrics to Track</h2>
+            
+            <div class="action-card">
+                <h4>Team Metrics (Track Every Match)</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Current (2025)</th>
+                            <th>Target (2026)</th>
+                            <th>How to Improve</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Team Average Score</td>
+                            <td>146 runs</td>
+                            <td>170+ runs</td>
+                            <td>Better partnerships, fewer early wickets</td>
+                        </tr>
+                        <tr>
+                            <td>Win Rate</td>
+                            <td>Low</td>
+                            <td>55%+ (10/18)</td>
+                            <td>Execute game plans, win key moments</td>
+                        </tr>
+                        <tr>
+                            <td>Bowling Economy</td>
+                            <td>4.5-5.5</td>
+                            <td>Under 4.5</td>
+                            <td>Reduce extras, better line and length</td>
+                        </tr>
+                        <tr>
+                            <td>Fielding (Runs Saved)</td>
+                            <td>Baseline</td>
+                            <td>15-20 per match</td>
+                            <td>Better catching, ground fielding, throws</td>
+                        </tr>
+                        <tr>
+                            <td>Extras Conceded</td>
+                            <td>High</td>
+                            <td>Under 15 per match</td>
+                            <td>Bowling discipline, practice</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            
+            <div class="action-card">
+                <h4>Individual Player Metrics</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player Type</th>
+                            <th>Key Metrics</th>
+                            <th>2026 Targets</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Batsmen</strong></td>
+                            <td>Runs, Average, Strike Rate, 50+ scores</td>
+                            <td>300+ runs, Avg 30+, SR 60+, 3+ fifties</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bowlers</strong></td>
+                            <td>Wickets, Economy, Average, 3+ wicket hauls</td>
+                            <td>25+ wickets, Econ &lt;4.5, Avg &lt;20, 3+ hauls</td>
+                        </tr>
+                        <tr>
+                            <td><strong>All-Rounders</strong></td>
+                            <td>Runs + Wickets combination</td>
+                            <td>200 runs + 15 wickets minimum</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wicketkeeper</strong></td>
+                            <td>Dismissals, Runs, Catches/Stumpings</td>
+                            <td>15+ dismissals, 200+ runs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fielders</strong></td>
+                            <td>Catches, Run-outs, Misfields</td>
+                            <td>10+ catches, 3+ run-outs, minimize errors</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quick Win Checklist -->
+        <div class="section">
+            <h2>✅ Quick Win Checklist - Start Immediately</h2>
+            
+            <div class="highlight-box success-box">
+                <h3>Actions to Take This Week</h3>
+                <ul class="checklist">
+                    <li>Schedule first team meeting to discuss 2026 season</li>
+                    <li>Confirm player availability for all 18 fixtures</li>
+                    <li>Book Obelisk Cricket Ground for practice sessions</li>
+                    <li>Organize fitness assessment for all players</li>
+                    <li>Create WhatsApp/communication group for team updates</li>
+                    <li>Assign roles and responsibilities to senior players</li>
+                    <li>Order any required equipment and team kit</li>
+                    <li>Plan pre-season training schedule (April)</li>
+                </ul>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Actions for Next Month (March 2026)</h3>
+                <ul class="checklist">
+                    <li>Start fitness training program for all players</li>
+                    <li>Conduct individual player meetings to set targets</li>
+                    <li>Organize team building social event</li>
+                    <li>Review and analyze 2025 match videos</li>
+                    <li>Create opposition dossiers for known teams</li>
+                    <li>Finalize playing XI and backup players</li>
+                    <li>Arrange practice matches with local teams</li>
+                    <li>Mental conditioning workshop for team</li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- Success Roadmap -->
+        <div class="section">
+            <h2>🗺️ Season Success Roadmap</h2>
+            
+            <div class="training-schedule">
+                <h3>Phase 1: Pre-Season (March-April)</h3>
+                <ul class="checklist">
+                    <li>Complete fitness training program</li>
+                    <li>Conduct 8+ net practice sessions</li>
+                    <li>Play 2-3 practice matches</li>
+                    <li>Finalize team strategy and roles</li>
+                    <li>Build team chemistry and confidence</li>
+                </ul>
+            </div>
+            
+            <div class="training-schedule">
+                <h3>Phase 2: Early Season (May-June, 9 matches)</h3>
+                <ul class="checklist">
+                    <li>Win opening match vs MK Warriors (momentum builder)</li>
+                    <li>Win at least 6 of first 9 matches</li>
+                    <li>Establish home dominance at Obelisk Ground</li>
+                    <li>Gather intelligence on new opponents</li>
+                    <li>Build confidence and winning mentality</li>
+                </ul>
+            </div>
+            
+            <div class="training-schedule">
+                <h3>Phase 3: Mid-Season (July, 5 matches)</h3>
+                <ul class="checklist">
+                    <li>Maintain momentum with consistent performances</li>
+                    <li>Win revenge match vs MK Superkings (July 4)</li>
+                    <li>Secure double over MK Warriors (July 11)</li>
+                    <li>Manage player fitness during busy period</li>
+                    <li>Stay in top 3 of league table</li>
+                </ul>
+            </div>
+            
+            <div class="training-schedule">
+                <h3>Phase 4: Late Season (August-September, 4 matches)</h3>
+                <ul class="checklist">
+                    <li>Win crucial matches to secure league position</li>
+                    <li>Finish strong with victories in final matches</li>
+                    <li>Achieve season targets (10+ wins, top 3 finish)</li>
+                    <li>Celebrate team achievements</li>
+                    <li>Plan for next season improvements</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Final Message -->
+        <div class="section">
+            <h2>💪 Final Message to Team</h2>
+            
+            <div class="highlight-box success-box">
+                <h3>The Path to Success</h3>
+                <p style="font-size: 1.1em; line-height: 1.8;">
+                    The 2026 season presents an incredible opportunity for MK Air CC Team 2. With 18 matches ahead, 
+                    we have the talent, experience, and determination to achieve great things. Success will come from:
+                </p>
+                <ul style="font-size: 1.05em; line-height: 1.8; margin-top: 15px;">
+                    <li><strong>Preparation:</strong> Train hard, practice smart, and be match-ready</li>
+                    <li><strong>Teamwork:</strong> Support each other, communicate, and play as one unit</li>
+                    <li><strong>Consistency:</strong> Perform well in every match, not just the big ones</li>
+                    <li><strong>Adaptability:</strong> Learn quickly from new opponents and adjust tactics</li>
+                    <li><strong>Belief:</strong> Trust in your abilities and the team's potential</li>
+                </ul>
+                <p style="font-size: 1.1em; line-height: 1.8; margin-top: 20px; font-weight: bold; color: #11998e;">
+                    Remember: Every match is an opportunity. Every player is important. Every moment counts. 
+                    Let's make 2026 a season to remember!
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding: 30px; color: #666; border-top: 2px solid #eee; margin-top: 40px;">
+            <p><strong>MK Air CC Team 2 - Winning Strategy Guide 2026</strong></p>
+            <p>Prepared: February 2026 | For: Players, Coaches, and Club Management</p>
+            <p style="margin-top: 15px; font-size: 1.1em; color: #11998e; font-weight: bold;">
+                🏆 Let's Win Together! 🏆
+            </p>
+        </div>
+    </div>
+</body>
+</html>
